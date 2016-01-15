@@ -1,0 +1,72 @@
+{
+  "version": "v4",
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "node/node.d.ts": {
+      "commit": "1984ea435fe9e93a012d50db7773db58ae5d494b"
+    },
+    "morgan/morgan.d.ts": {
+      "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
+    },
+    "express/express.d.ts": {
+      "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
+    },
+    "serve-static/serve-static.d.ts": {
+      "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
+    },
+    "mime/mime.d.ts": {
+      "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
+    },
+    "bunyan/bunyan.d.ts": {
+      "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
+    },
+    "protobufjs/protobufjs.d.ts": {
+      "commit": "fe563dff3428bac1260d1794e2c2ecf8f097535a"
+    },
+    "chai/chai.d.ts": {
+      "commit": "f11e49cfb77f99678657ddfe5d43017849675c64"
+    },
+    "mocha/mocha.d.ts": {
+      "commit": "fe563dff3428bac1260d1794e2c2ecf8f097535a"
+    },
+    "sinon/sinon.d.ts": {
+      "commit": "fe563dff3428bac1260d1794e2c2ecf8f097535a"
+    },
+    "assertion-error/assertion-error.d.ts": {
+      "commit": "f11e49cfb77f99678657ddfe5d43017849675c64"
+    },
+    "mysql/mysql.d.ts": {
+      "commit": "fe563dff3428bac1260d1794e2c2ecf8f097535a"
+    },
+    "cuid/cuid.d.ts": {
+      "commit": "6a6ad7068a177c0d7a8a20830626cb63277191c5"
+    },
+    "chai-as-promised/chai-as-promised.d.ts": {
+      "commit": "f11e49cfb77f99678657ddfe5d43017849675c64"
+    },
+    "promises-a-plus/promises-a-plus.d.ts": {
+      "commit": "f11e49cfb77f99678657ddfe5d43017849675c64"
+    },
+    "long/long.d.ts": {
+      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
+    },
+    "bytebuffer/bytebuffer.d.ts": {
+      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
+    },
+    "bluebird/bluebird.d.ts": {
+      "commit": "1984ea435fe9e93a012d50db7773db58ae5d494b"
+    },
+    "knex/knex.d.ts": {
+      "commit": "1984ea435fe9e93a012d50db7773db58ae5d494b"
+    },
+    "bookshelf/bookshelf.d.ts": {
+      "commit": "1984ea435fe9e93a012d50db7773db58ae5d494b"
+    },
+    "lodash/lodash.d.ts": {
+      "commit": "1984ea435fe9e93a012d50db7773db58ae5d494b"
+    }
+  }
+}

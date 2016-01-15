@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package Test;
+
+message Test {
+    string name = 1;
+    string desc = 2;
+    bool important = 3;
+    double price = 4;
+    int32 quantity = 5;
+}
+
+message TestResult {
+    string name = 1;
+    int32 age = 2;
+    bool validated = 3;
+    double score = 4;
+}
+
+service TestService {
+   rpc testMethod(Test.Test) returns(Test.TestResult);
+}

@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package Platform;
+
+message RequestContainer {
+    string method = 1;
+    bytes  data = 100;
+}
+
+message ResponseContainer {    
+    oneof value {
+        Result result = 2;
+        Error error = 3;
+    };
+    
+    message Result {
+        string method = 1; 
+        bytes data = 100;
+    }
+    
+    message Error {
+        string method = 1; 
+        string message = 2;
+        int32 code = 3;
+    }
+}
