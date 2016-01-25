@@ -2,7 +2,7 @@
 
 var Promise = require('bluebird');
 var Defs = require('./definitions');
-var Errors = require('../errors');
+var Errors = require('../../errors');
 var bramqp = require('bramqp');
 var URL = require('url');
 var QS = require('querystring');

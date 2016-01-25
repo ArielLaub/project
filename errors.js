@@ -1,6 +1,6 @@
 'use strict'
 
-var E = require('../utils/error').E;
+var E = require('./utils/error').E;
 
 var code = 100000; //amqp connection errors
 module.exports.InternalError        = E(code++, 'internal error');
@@ -16,5 +16,10 @@ module.exports.NotDefinedAsProducer = E(code++, 'not defined as producer');
 module.exports.AlreadySubscribed    = E(code++, 'already subscribed');
 module.exports.NotSubscribed        = E(code++, 'not subscribed');
 module.exports.InvalidRequest       = E(code++, 'invalid request');
+module.exports.InvalidServiceName   = E(code++, 'invalid service name');
 module.exports.InvalidServiceMethod = E(code++, 'invalid service method');
+
+var code = 200000; //amqp connection errors
+module.exports.WrongEmailOrPassword           = E(code++, 'wrong email or password');
+
  

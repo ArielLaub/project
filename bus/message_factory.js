@@ -4,10 +4,20 @@ var path = require('path'), fs=require('fs');
 var ProtoBuf = require('protobufjs');
 
 var utils  = require('../utils');
-var Errors = require('./errors');
+var Errors = require('../errors');
 
 var GeneralError = utils.error.GeneralError;
 var logger = utils.logger.create('bus.message_factory');
+
+function deleteNullProperties(test, recurse) {
+    for (var i in test) {
+        if (test[i] === null) {
+            delete test[i];
+        } else if (recurse && typeof test[i] === 'object') {
+            deleteNullProperties(test[i], recurse);
+        }
+    }
+}
 
 function findFiles(startPath,filter, parentFiltered){
     var files=fs.readdirSync(startPath);
@@ -37,7 +47,7 @@ class MessageFactory {
         this.response = null;
         this.cache = new Map();
         this.initialized = false;
-        this.builder = ProtoBuf.newBuilder({ convertFieldsToCamelCase: true });
+        this.builder = ProtoBuf.newBuilder({ convertFieldsToCamelCase: false });
     }
     
     init() {
@@ -68,10 +78,11 @@ class MessageFactory {
         return Message.decode(data); 
     }
     
-    buildRequest(method, obj) {
+    buildRequest(methodFullName, obj) {
+        deleteNullProperties(obj, true);
         if (!this.initialized) throw new Errors.NotInitialized('message factory not initialized');
         
-        var TMethod = this.builder.lookup(method);
+        var TMethod = this.builder.lookup(methodFullName);
         var messageType = TMethod.requestName; 
         
         if (!this.cache.has(messageType)) 
@@ -79,7 +90,7 @@ class MessageFactory {
 
         var Message = this.cache.get(messageType);
         return new this.Request({
-            method: method,
+            method: methodFullName,
             data: new Message(obj).encode().toBuffer()            
         });   
     }
@@ -93,28 +104,36 @@ class MessageFactory {
         return request;
     }
         
-    buildResponse(method, obj) {
+    buildResponse(methodFullName, obj) {
         if (!this.initialized) throw new Errors.NotInitialized('message factory not initialized');
+        deleteNullProperties(obj, true);
+
         var response = null;
-        var TMethod = this.builder.lookup(method);
+        var TMethod = this.builder.lookup(methodFullName);
         var messageType = TMethod.responseName; 
 
         if (obj instanceof Error) {
             response = new this.Response();
             response.set('error', new this.ResponseError({
-                method: method,
+                method: methodFullName,
                 message: obj.message,
-                code: obj.code || -1
+                code: String(obj.code) || '-1'
             }));         
         } else {
             if (!this.cache.has(messageType)) 
                 this.cache.set(messageType, this.builder.build(messageType));
             let Message = this.cache.get(messageType);        
             response = new this.Response();
-            response.set('result', new this.ResponseResult({
-                method: method,
-                data: new Message(obj).encode().toBuffer()
-            }));                       
+            try {
+                response.set('result', new this.ResponseResult({
+                    method: methodFullName,
+                    data: new Message(obj).encode().toBuffer()
+                }));                                       
+            } 
+            catch (error) {
+                logger.error(`error building response message with data ${JSON.stringify(obj)}`);
+                throw error;
+            }
         }
         return response;
     }

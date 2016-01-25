@@ -21,6 +21,14 @@ message ResponseContainer {
     message Error {
         string method = 1; 
         string message = 2;
-        int32 code = 3;
+        string code = 3;
     }
+}
+
+message MessageResponse {
+    string message = 1;
+}
+
+message AccountIdRequest {
+    int32 account_id = 1;
 }

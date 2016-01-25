@@ -7,13 +7,14 @@ var factory = require('../mocks/message_factory');
 var TestService = require('../mocks/test_service');
 var Connection = require('../../bus/amqp/connection');
 var MessageDispatcher = require('../../bus/amqp/message_dispatcher');
+var ServiceProxy = require('../../bus/service_proxy');
 var GeneralError = utils.error.GeneralError;
 
 var expect = chai.expect;
 
 describe('Message Service', () => {
     var service;
-    var dispatcher
+    var client;
     var serverConnection, clientConnection;
     
     before(done => {
@@ -28,8 +29,8 @@ describe('Message Service', () => {
                 return clientConnection.connectUrl();
             })
             .then(() => {
-                dispatcher = new MessageDispatcher(clientConnection);
-                return dispatcher.init();
+                client = new ServiceProxy(clientConnection, 'Test.TestService');
+                return client.init();
             })
             .then(() => {
                 return serverConnection.queuePurge(1, 'Test.TestService', false);
@@ -54,13 +55,9 @@ describe('Message Service', () => {
             validated: true,
             score: 90.4
         };
-        var request = factory.buildRequest('Test.TestService.testMethod', testRequestData);
-        var promise = dispatcher.publish(request.encode().toBuffer(), 'REQUEST.Test.TestService.testMethod');
-        promise.then(data => {
-            var response = factory.decodeResponse(data);
+        client.testMethod(testRequestData).then(response => {
             expect(response).to.have.property('result');
-            expect(response.result).to.have.property('message');
-            expect(response.result.message).to.have.property('name', 'Naomi Laub');
+            expect(response.result).to.have.property('name', 'Naomi Laub');
             done();
         })
         .catch(err => {
@@ -70,13 +67,10 @@ describe('Message Service', () => {
     
     it('should test an error from rpc call', done => {
         service.nextResult = new GeneralError('just an error', 123456);
-        var request = factory.buildRequest('Test.TestService.testMethod', testRequestData);
-        var promise = dispatcher.publish(request.encode().toBuffer(), 'REQUEST.Test.TestService.testMethod');
-        promise.then(data => {
-            var response = factory.decodeResponse(data);
+        client.testMethod(testRequestData).then(response => {
             expect(response).to.have.property('error');
             expect(response.error).to.have.property('message', 'just an error');
-            expect(response.error).to.have.property('code', 123456);
+            expect(response.error).to.have.property('code', '123456');
             done();
         })
         .catch(err => {

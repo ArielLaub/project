@@ -84,7 +84,7 @@ describe('Message Factory', () => {
         expect(response).to.have.property('value', 'error');
         expect(response).to.have.property('error');
         expect(response.error).to.have.property('message', 'stam');
-        expect(response.error).to.have.property('code', 1);
+        expect(response.error).to.have.property('code', '1');
         done();        
     });
     
@@ -94,7 +94,7 @@ describe('Message Factory', () => {
         expect(response).to.have.property('value', 'error');
         expect(response).to.have.property('error');
         expect(response.error).to.have.property('message', 'stam');
-        expect(response.error).to.have.property('code', -21);
+        expect(response.error).to.have.property('code', '-21');
         done();         
     });
 

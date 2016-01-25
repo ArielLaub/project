@@ -1,6 +1,6 @@
 'use strict'
 
-var Errors = require('../errors');
+var Errors = require('../../errors');
 var cuid = require('cuid');
 
 class BaseListener { //abstract

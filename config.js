@@ -1,3 +1,5 @@
+'use strict'
+
 class Config {
     static get isProduction() {
         return (process.env.NODE_ENV === 'production');
@@ -17,6 +19,36 @@ class Config {
     
     static get amqpConnectionString() {
         return 'amqp://guest:guest@localhost:5672/';
+    }
+    
+    static get jwtPrivateKey() {
+        if (!this._jwtPrivateKey)
+            this._jwtPrivateKey = require('fs').readFileSync('./private.pem');  
+        
+        return this._jwtPrivateKey;       
+    }
+    
+    static get jwtPublicKey() {
+        if (!this._jwtPublicKey)
+            this._jwtPublicKey = require('fs').readFileSync('./public.pem');
+        
+        return this._jwtPublicKey;
+    }
+    
+    static get mandrillFromEmail() {
+        return 'test_user@fundbird.co.uk';
+    }
+    
+    static get mandrillFromName() {
+        return 'Test User';
+    }
+    
+    static get mandrillReplyToEmail() {
+        return 'reply_to@fundbird.co.uk';
+    }
+    
+    static get mandrillApiKey() {
+        return 'g2Y__0WVFA34b1S92sgBMw';
     }
 }
 

@@ -1,13 +1,13 @@
 'use strict'
 
-var Errors = require('./errors');
+var Errors = require('../errors');
 var MessageListener = require('./amqp/message_listener');
 
 var utils = require('../utils');
-var logger = utils.logger.create('bus.message_factory');
+var logger = utils.logger.create('bus.message_service');
+var GeneralError = utils.error.GeneralError;
 
 var factory = require('./message_factory').singleton;
-var builder = factory.builder;
 
 class MessageService {    
     constructor(connection, serviceName) {
@@ -21,10 +21,12 @@ class MessageService {
         if (!request) throw new Errors.InvalidRequest();
         var method = request.method.split('.')[2]; //<package>.<service>.<method>
         if (this[method] && typeof this[method] === 'function')
-            return this[method](request, id).then(result => {
+            return this[method](request.message, id).then(result => {
                 return factory.buildResponse(request.method, result).encode().toBuffer();
             })
             .catch(error => {
+                if (!(error instanceof GeneralError))
+                    logger.error(error.stack);
                 return factory.buildResponse(request.method, error).encode().toBuffer();                
             });
         else {
