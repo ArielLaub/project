@@ -1,3 +1,5 @@
 node_modules/
 typings/
 .DS_Store
+tsd-debug.log
+npm-debug.log

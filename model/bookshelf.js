@@ -9,5 +9,6 @@ var knex = require('knex')({
 });
 
 var bookshelf = require('bookshelf')(knex);
+if (!bookshelf.knex) throw new Error();
 
 module.exports = bookshelf;

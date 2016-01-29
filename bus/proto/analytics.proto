@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package Analytics;
+
+message GetConvertedAccountsRequest {
+    int32 from = 1;
+    int32 to = 2;
+    int32 affiliate_id = 3;
+    repeated int32 account_ids = 4;
+    int32 limit = 5;
+}
+
+message GetConvertedAccountsResponse {
+    repeated int32 account_ids = 1;
+}
+
+service Service {
+    rpc getConvertedAccounts(Analytics.GetConvertedAccountsRequest) returns(Analytics.GetConvertedAccountsResponse);
+}

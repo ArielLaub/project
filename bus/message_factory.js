@@ -9,12 +9,13 @@ var Errors = require('../errors');
 var GeneralError = utils.error.GeneralError;
 var logger = utils.logger.create('bus.message_factory');
 
-function deleteNullProperties(test, recurse) {
+function _prepareObject(test, recurse) {
+    //remove null properties
     for (var i in test) {
         if (test[i] === null) {
             delete test[i];
         } else if (recurse && typeof test[i] === 'object') {
-            deleteNullProperties(test[i], recurse);
+            _prepareObject(test[i], recurse);
         }
     }
 }
@@ -79,7 +80,7 @@ class MessageFactory {
     }
     
     buildRequest(methodFullName, obj) {
-        deleteNullProperties(obj, true);
+        _prepareObject(obj, true);
         if (!this.initialized) throw new Errors.NotInitialized('message factory not initialized');
         
         var TMethod = this.builder.lookup(methodFullName);
@@ -106,7 +107,7 @@ class MessageFactory {
         
     buildResponse(methodFullName, obj) {
         if (!this.initialized) throw new Errors.NotInitialized('message factory not initialized');
-        deleteNullProperties(obj, true);
+        _prepareObject(obj, true);
 
         var response = null;
         var TMethod = this.builder.lookup(methodFullName);

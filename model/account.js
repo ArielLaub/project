@@ -7,7 +7,7 @@ var logger = utils.logger.create('model.account');
 var Errors = require('../errors');
 
 var Account = bookshelf.Model.extend({
-    tableName: 'accounts',
+    tableName: 'users',
 
     constructor: function() {
         bookshelf.Model.apply(this, arguments);

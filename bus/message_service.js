@@ -25,7 +25,7 @@ class MessageService {
                 return factory.buildResponse(request.method, result).encode().toBuffer();
             })
             .catch(error => {
-                if (!(error instanceof GeneralError))
+                if (error instanceof Error)
                     logger.error(error.stack);
                 return factory.buildResponse(request.method, error).encode().toBuffer();                
             });

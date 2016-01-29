@@ -10,8 +10,8 @@ var Errors = require('../../errors');
 
 describe('Account Model', () => {
     before(done => {
-        bookshelf.knex.schema.dropTableIfExists('accounts').then(() => {
-            return bookshelf.knex.schema.createTable('accounts', function (table) {
+        bookshelf.knex.schema.dropTableIfExists('users').then(() => {
+            return bookshelf.knex.schema.createTable('users', function (table) {
                 table.increments();
                 table.timestamps();
                 table.string('email', 100).unique().index().notNullable();
@@ -91,7 +91,7 @@ describe('Account Model', () => {
         }).then(() => {
             done('should have failed updating password with an expired token');
         }).catch(err => {
-            expect(err.message).to.equal('wrong email or password');
+            expect(err.message).to.equal('invalid_credentials');
             done();
         });
     });

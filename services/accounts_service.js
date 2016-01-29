@@ -17,7 +17,8 @@ class AccountsService extends MessageService {
         this._publicKey = publicKey || Config.jwtPublicKey;
         this._sign = (payload) => {
             return new Promise((resolve, reject) => {
-                resolve(jwt.sign(payload, {key: this._privateKey, passphrase: '123456'}, { algorithm: 'RS256'}));
+                var _key = {key: this._privateKey, passphrase: '123456'};
+                resolve(jwt.sign(payload, _key, { algorithm: 'RS256'}));
             });
         };
         this._verify = (token) => {
@@ -31,19 +32,20 @@ class AccountsService extends MessageService {
     }
     
     create(request) {
-        var account = new Account({email: request.email, password: request.password});
+        var account = new Account();
         var jsonAccount;
-        return account.save().then(account => {
-            jsonAccount = account.toJSON();
-            return this._sign({id: account.id});
-        }).then(token => {
-            let result = {
-                id: jsonAccount.id,
-                email_verification_token:  jsonAccount.email_verification_token,
-                access_token: token
-            }
-            return result;
-        });
+        return account.save({email: request.email, password: request.password})
+            .then(account => {
+                jsonAccount = account.toJSON();
+                return this._sign({id: account.id});
+            }).then(token => {
+                let result = {
+                    id: jsonAccount.id,
+                    email_verification_token:  jsonAccount.email_verification_token,
+                    access_token: token
+                }
+                return result;
+            });
     }
     
     authenticate(request) {
@@ -72,8 +74,6 @@ class AccountsService extends MessageService {
         }).catch(error => {
             logger.warn(`failed attempt to reset password for invalid email ${request.email} with error ${error.message}`);
             throw new Errors.WrongEmailOrPassword();
-        }).tap(account => {
-            logger.error(JSON.stringify(account));
         });
     }
     

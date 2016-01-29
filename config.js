@@ -50,6 +50,14 @@ class Config {
     static get mandrillApiKey() {
         return 'g2Y__0WVFA34b1S92sgBMw';
     }
+    
+    static get hasOffersNetworkId() {
+        return 'finimpact';
+    }
+    
+    static get hasOffersApiKey() {
+        return 'NETwViJIrY3nnR2t1a5lsnGIwLE5i2';
+    }
 }
 
 class Development extends Config {

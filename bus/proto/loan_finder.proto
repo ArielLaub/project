@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package LoanFinder;
+
+message GetQuestionsRequest {
+    string country_code = 1;
+}
+
+message GetQuestionsResponse {
+    repeated Question questions = 1;
+    
+    message Question {
+        int32 id = 1;
+        string description = 2;
+        int32 order_by = 3;
+        repeated Option options = 4;
+        
+        message Option {
+            int32 id = 1;
+            string value = 2;
+        }
+    }
+}
+
+message GetQualifingLendersRequest {
+    int32 account_id = 1;
+    string affiliate_id = 2;
+    string affiliate_sub_id = 3;
+    repeated Answer answers = 4;
+    bool customers_other_businesses = 5;
+    bool revenues_over_5m = 6;
+    bool process_over_4k = 7;
+    bool process_card = 8;
+    
+    message Answer {
+        int32 question_id = 1;
+        int32 answer_id = 2;
+    }
+}
+
+message GetQualifingLendersResponse {
+    repeated Match matches = 1;
+    
+    message Match {
+        int32 lender_id = 1;
+        string name = 2;
+        string description = 3;
+        string url = 4;
+        int32 score = 5;
+    }
+}
+
+service Service {
+    rpc getQuestions(GetQuestionsRequest) returns(GetQuestionsResponse);
+    rpc getQualifingLenders(GetQualifingLendersRequest) returns(GetQualifingLendersResponse);
+}

@@ -56,8 +56,7 @@ describe('Message Service', () => {
             score: 90.4
         };
         client.testMethod(testRequestData).then(response => {
-            expect(response).to.have.property('result');
-            expect(response.result).to.have.property('name', 'Naomi Laub');
+            expect(response).to.have.property('name', 'Naomi Laub');
             done();
         })
         .catch(err => {
@@ -66,15 +65,12 @@ describe('Message Service', () => {
     });
     
     it('should test an error from rpc call', done => {
-        service.nextResult = new GeneralError('just an error', 123456);
-        client.testMethod(testRequestData).then(response => {
-            expect(response).to.have.property('error');
-            expect(response.error).to.have.property('message', 'just an error');
-            expect(response.error).to.have.property('code', '123456');
+        service.nextResult = new GeneralError('test_error', 123456);
+        client.testMethod(testRequestData).catch(err => {
+            expect(err).to.exist;
+            expect(err).to.have.property('message', 'test_error');
+            expect(err).to.have.property('code', '123456');
             done();
-        })
-        .catch(err => {
-            done(err);
         });        
     });
 });
