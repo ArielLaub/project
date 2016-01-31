@@ -51,22 +51,24 @@ var Account = bookshelf.Model.extend({
 }, 
 {
     create: function(email, password, profile) {
-        var newAccount = new Account();
-        //for now we just flatten the profile fields to the account itself.
-        return newAccount.save(Object.assign({email: email, password: password}, profile))
-            .then(account => {
-                return account.toJSON();
-            })
-            .catch(error => {
-                throw error;
-            })
+        return new Promise(resolve => {
+            if (!email || !password) throw new Errors.WrongEmailOrPassword();
+            resolve(new Account());        
+        }).then((newAccount) => {
+            //for now we just flatten the profile fields to the account itself.
+            return newAccount.save(Object.assign({email: email, password: password}, profile || {}))            
+        }).then(account => {
+            return account.toJSON();
+        }).catch(error => {
+            throw error;
+        })
     },
     
     //Class properties
     authenticate: function(email, password) {
         return new Promise(resolve => {
             if (!email || !password) 
-                throw new Error('Email and password are both required');
+                throw new Errors.WrongEmailOrPassword();
             resolve();
         }).then(() => {
             return new this({email: email.toLowerCase().trim()}).fetch({require: true});    
