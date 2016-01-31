@@ -25,9 +25,12 @@ function init(router, connection) {
             password: req.body.password
         }).then(response => {
             if (response.error) 
-                res.json({ success: false, error: response.error.message, code: response.error.code || -1 });
+                throw new GeneralError(response.error.message, response.error.code || -1);
             else
                 res.json({ success: true, result: response.result });
+        }).catch(error => {
+            req.logger(`failed attempt to fetch me for ${req.accountId}`);
+            res.json({ success: false, error: 'access_denied'});
         });
     });
     
@@ -37,24 +40,23 @@ function init(router, connection) {
                 if (response.error) throw new GeneralError(response.error.message, response.error.code)
                 
                 res.json({ success: true, result: response.result});
-            })
-            .catch(error => {
+            }).catch(error => {
                 req.logger(`failed attempt to fetch me for ${req.accountId}`);
                 res.json({ success: false, error: 'access_denied'});
             });
     });
     
     routes.post('/resetPassword', function(req, res) {
-        accountsService.resetPassword({
-            email: req.body.email
-        }).then(response => {
-            if (response.value === 'error') throw new GeneralError(response.error.message, response.error.code);
-            return notificationsService.sendResetPasswordEmail({account_id: response.result.id}, false);
-        }).catch(error => {
-            req.logger.error(`error sending reset password email to ${req.body.email} - ${error.message}`);
-        }).finally(() => {
-            res.json({success: true}); //do not expose reset password errors to consumers
-        });
+        accountsService.resetPassword({email: req.body.email})
+            .then(response => {
+                if (response.value === 'error') 
+                    throw new GeneralError(response.error.message, response.error.code);
+                return notificationsService.sendResetPasswordEmail({account_id: response.result.id}, false);
+            }).catch(error => {
+                req.logger.error(`error sending reset password email to ${req.body.email} - ${error.message}`);
+            }).finally(() => {
+                res.json({success: true}); //do not expose reset password errors to consumers
+            });
     }); 
     
     routes.post('/setPassword', function(req, res) {
