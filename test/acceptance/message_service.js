@@ -15,14 +15,14 @@ var expect = chai.expect;
 describe('Message Service', () => {
     var service;
     var client;
-    var serverConnection, clientConnection;
+    var connection, clientConnection;
     
     before(done => {
-        serverConnection = new Connection();
+        connection = new Connection();
         clientConnection = new Connection();
-        serverConnection.connectUrl()
+        connection.connectUrl()
             .then(() => {
-                service = new TestService(serverConnection);
+                service = new TestService(connection);
                 return service.init();
             })
             .then(() => {
@@ -33,7 +33,7 @@ describe('Message Service', () => {
                 return client.init();
             })
             .then(() => {
-                return serverConnection.queuePurge(1, 'Test.TestService', false);
+                return connection.queuePurge(1, 'Test.TestService', false);
             })
             .then(() => {
                 done();
@@ -72,5 +72,21 @@ describe('Message Service', () => {
             expect(err).to.have.property('code', '123456');
             done();
         });        
+    });
+    
+    it('should re-initialize listeners after disconnect', done => {
+        //1. disconnect the service connection (client connection is left alone).
+        //2. client sends out a request
+        //3. service connection reconnected and client should get back the rpc result now
+        connection.once('disconnected', () => {
+            client.testMethod(testRequestData).then(response => {
+                done();
+            }).catch(done);
+
+            connection.connectUrl();            
+        });
+        
+        
+        connection.disconnect();
     });
 });

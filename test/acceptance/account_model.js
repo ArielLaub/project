@@ -27,15 +27,12 @@ describe('Account Model', () => {
     });
     
     it('should create an account', done => {
-        var account = Account.forge({email: 'ariel.laub@gmail.com', password: 'cookielida'});
-        expect(account.get('email')).to.equal('ariel.laub@gmail.com');
-        expect(account.get('password')).to.equal('cookielida');
-        account.save().tap(account => {
-            var json = account.toJSON();
-            expect(json).to.have.property('email', 'ariel.laub@gmail.com');
-            expect(json).to.have.property('password').with.lengthOf(60); //bscrypt hash has length of 60
-            expect(bcrypt.compareSync('cookielida', json.password)).to.be.true;        
-        }).then(() => { done(); });
+        Account.create('ariel.laub@gmail.com', 'cookielida', {first_name: 'Ariel', last_name: 'Laub'})
+            .then(account => {
+                expect(account).to.have.property('email', 'ariel.laub@gmail.com');
+                expect(bcrypt.compareSync('cookielida', account.password)).to.be.true;
+                done();        
+            }).catch(done);
     });
     
     it('should login an account', done => {
@@ -91,7 +88,7 @@ describe('Account Model', () => {
         }).then(() => {
             done('should have failed updating password with an expired token');
         }).catch(err => {
-            expect(err.message).to.equal('invalid_credentials');
+            expect(err.message).to.equal('invalid credentials');
             done();
         });
     });

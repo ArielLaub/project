@@ -18,8 +18,11 @@ class Connection extends EventEmitter {
         this._channel = 1;              //highest channel assigned by this connection
         this._recycledChannels = [];    //channels that were closed can be re-assigned
         this._handle = null;            //the bramqp handle
+        this._connected = false;
     }
-
+    
+    get isConnected() { return this._connected };
+    
     connect(protocol, hostName, port, vhost, username, password) {
         if (!protocol) protocol = 'amqp:';
         if (!hostName) hostName = 'localhost';
@@ -34,6 +37,8 @@ class Connection extends EventEmitter {
         lib = require(protocol === 'amqp:' ? 'net' : 'tls');
         sock = new lib.Socket();
         sock.once('error', (err) => {
+            this._connected = false;
+            this.emit('disconnected', {});
             logger.error(`message bus error - ${err}`);
             logger.info('will retry in 5 seconds.');
             setTimeout(() => {
@@ -54,7 +59,12 @@ class Connection extends EventEmitter {
                 else
                     throw new Errors.ConnectionError(err);
             });
+            
             return Promise.promisify(handle.openAMQPCommunication.bind(handle))(username, password, true, vhost);
+        }).then(() => {
+            logger.info('connection initialized.');
+            this._connected = true;
+            this.emit('connected', {});
         });
     }
 
@@ -71,6 +81,8 @@ class Connection extends EventEmitter {
             handle.on('error', (error) => {
             });
             handle.closeAMQPCommunication();
+            this._connected = false;
+            this.emit('disconnected', {});
             resolve();
         });
     }

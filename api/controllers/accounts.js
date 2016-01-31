@@ -82,6 +82,18 @@ function init(router, connection) {
         });
     });
     
+    routes.post('/create', function(req, res) {
+        accountsService.create({
+            email: req.body.email,
+            password: req.body.password,
+            profile: req.body.profile
+        }).then(result => {
+            res.json({success: true, result: result});
+        }).catch(error => {
+            res.json({success: false, error: error.message, code: error.code});
+        });
+    });
+    
     return Promise.all([
         accountsService.init(),
         notificationsService.init()

@@ -36,6 +36,8 @@ class MessageDispatcher {
     }
     
     publish(content, routingKey, rpc) {
+        if (!this.connection.isConnected) throw new Errors.NotConnected();
+        
         if (rpc !== false) rpc = true;
         var id = cuid();
         var properties = {

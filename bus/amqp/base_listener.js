@@ -2,9 +2,11 @@
 
 var Errors = require('../../errors');
 var cuid = require('cuid');
+var EventEmitter = require('events').EventEmitter;
 
-class BaseListener { //abstract
+class BaseListener extends EventEmitter { //abstract
     constructor(connection, logger) {
+        super();
         if (!connection) throw new Errors.ConnectionRequired();
         if (!logger) throw new Errors.LoggerRequired();
         
@@ -17,12 +19,32 @@ class BaseListener { //abstract
         this.handler      = null;
         this.isAnonymous  = true;
         this.logger       = logger;
+
+        //re-init upon reconnection.
+        connection.once('disconnected', () => {
+            //check if listener was previously initialized.
+            if (this.channel > 0) {
+                this.channel = 0;
+                logger.warn(`listener on ${this.queueName} disconnected`);
+                connection.once('connected', () => {
+                    logger.info(`listener on ${this.queueName} reconnected`);
+                    this.init(this.handler, this.queueName).then(() => {
+                        //check if listener was previsouly started.
+                        if (this.consumerTag) {
+                            this.consumerTag = '';
+                            this.start();
+                        }
+                    });
+                });                
+            }
+        });         
     }
     
     init(messageHandler, queueName) {
         if (this.channel) throw new Errors.AlreadyInitialized();
         if (!this.exchangeName) throw new Errors.ExchangeRequired();
-        
+        if (!this.connection.isConnected) throw new Errors.NotConnected();
+
         this.handler = messageHandler        
         this.isAnonymous = !queueName;
         
@@ -40,18 +62,27 @@ class BaseListener { //abstract
                 if (this.exchangeType === 'direct')
                     return this.connection.queueBind(this.channel, queueName, this.exchangeName, queueName, false, {});
                 
+            })
+            .then(() => {
+                this.emit('initialized', {});
             });
     }
     
     start() {
         if (!this.channel) throw new Errors.NotInitialized();
         if (this.consumerTag) throw new Errors.AlreadyStarted();
+        if (!this.connection.isConnected) throw new Errors.NotConnected();
+        
         this.consumerTag = cuid();
-        return this.connection.basicConsume(this.channel, this.queueName, this.consumerTag, false, this.isAnonymous, false, false, null, this.handler);
+        return this.connection.basicConsume(this.channel, this.queueName, this.consumerTag, false, this.isAnonymous, false, false, null, this.handler)
+            .then(() => {
+                this.emit('started', {});
+            });
     }
     
     close() {
         if (!this.channel || !this.queueName) throw new Errors.NotInitialized();
+        if (!this.connection.isConnected) throw new Errors.NotConnected();
         return this.connection.basicCancel(this.channel, this.consumerTag)
             .then(() => {
                 this.consumerTag = '';

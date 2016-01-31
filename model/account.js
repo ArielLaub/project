@@ -50,8 +50,20 @@ var Account = bookshelf.Model.extend({
     }
 }, 
 {
+    create: function(email, password, profile) {
+        var newAccount = new Account();
+        //for now we just flatten the profile fields to the account itself.
+        return newAccount.save(Object.assign({email: email, password: password}, profile))
+            .then(account => {
+                return account.toJSON();
+            })
+            .catch(error => {
+                throw error;
+            })
+    },
+    
     //Class properties
-    authenticate: Promise.method(function(email, password) {
+    authenticate: function(email, password) {
         if (!email || !password) 
             throw new Error('Email and password are both required');
         
@@ -68,9 +80,9 @@ var Account = bookshelf.Model.extend({
                     return account.toJSON();
                 });
             });
-    }),
+    },
     
-    resetPassword: Promise.method(function(email) {
+    resetPassword: function(email) {
         return crypto.randomBytesAsync(20)
             .then(buf => {
                 var token = buf.toString('hex');
@@ -82,9 +94,9 @@ var Account = bookshelf.Model.extend({
             .then(() => {
                 return Account.where({email: email}).fetch().then(account => account.toJSON());
             });
-    }),
+    },
     
-    setPassword: Promise.method(function(email, oldPasswordOrToken, newPassword) {
+    setPassword: function(email, oldPasswordOrToken, newPassword) {
         return new this({email: email.toLowerCase().trim()}).fetch({require: true})
             .catch(err => {
                 if (err.message !== 'EmptyResponse')
@@ -104,9 +116,9 @@ var Account = bookshelf.Model.extend({
                     return account.save({password: newPassword},{});
                 });
             });        
-    }),
+    },
     
-    verifyEmail: Promise.method(function(email, emailVerificationToken) {
+    verifyEmail: function(email, emailVerificationToken) {
         return new this({email: email.toLowerCase().trim()}).fetch({require: true})
             .catch(err => {
                 if (err.message !== 'EmptyResponse')
@@ -122,11 +134,11 @@ var Account = bookshelf.Model.extend({
                 else
                     throw new Errors.WrongEmailOrPassword();
             });        
-    }),
+    },
     
-    getAccountById: Promise.method(function(id) {
+    getAccountById: function(id) {
         return new this({id: id}).fetch({require: true});
-    })
+    }
 })
 
 module.exports = Account;

@@ -4,6 +4,7 @@ var qs = require('qs');
 
 var Config = require('../../config');
 var util = require('util');
+
 function getMethod(target, method) {
     var query = {
         NetworkId: Config.hasOffersNetworkId,

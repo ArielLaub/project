@@ -66,18 +66,14 @@ class AnalyticsService extends MessageService {
             if (response.data && response.data.data) {
                 response.data.data.forEach(value => {
                     try {
-                        result.push(parseInt(value));
+                        result.push(parseInt(value.Stat.affiliate_info4));
                     } catch (error) {
-                        logger.error(`fetched invalid account id from hasOffers ${value}`)
+                        logger.error(`fetched invalid account id from hasOffers ${value}`);
                     }
                 });
             }
-            try {
-                result.push(response.data.data.map(value => parseInt(value.Stat[ACCOUNT_ID_FIELD_NAME])));                
-            } catch (e) {
-            }
+            return result;
         });
-        return result;
     }
 }
 

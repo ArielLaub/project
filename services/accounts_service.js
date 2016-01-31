@@ -45,6 +45,13 @@ class AccountsService extends MessageService {
                     access_token: token
                 }
                 return result;
+            }).catch(error => {
+                if (error.code === 'ER_DUP_ENTRY') {
+                    throw new Errors.EmailAlreadyExists();
+                } else {
+                    logger.error(`unrecognized errror while creating account - ${error.messge}`);
+                    throw new Errors.InternalError();s
+                }     
             });
     }
     

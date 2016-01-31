@@ -7,7 +7,7 @@ var Errors = require('../errors');
 
 var utils  = require('../utils');
 var logger = utils.logger.create('services.loan_matcher_service');
-var questions = require('./loan_matcher/questions');
+var questions = require('./loan_finder/questions');
 var LenderPreference = require('../model/lender_preference');
 var Lender = require('../model/lender');
 

@@ -14,25 +14,21 @@ var expect = chai.expect;
 describe('AnalyticsService', () => {
     var service;
     var client;
-    var serverConnection, clientConnection;
+    var connection;
     
     before(done => {
-        serverConnection = new Connection();
-        clientConnection = new Connection();
-        serverConnection.connectUrl()
+        connection = new Connection();
+        connection.connectUrl()
             .then(() => {
-                service = new AnalyticsService(serverConnection);
+                service = new AnalyticsService(connection);
                 return service.init();
             })
             .then(() => {
-                return clientConnection.connectUrl();
-            })
-            .then(() => {
-                client = new ServiceProxy(clientConnection, 'Analytics.Service');
+                client = new ServiceProxy(connection, 'Analytics.Service');
                 return client.init();
             })
             .then(() => {
-                return serverConnection.queuePurge(1, 'Analytics.Service', false);
+                return connection.queuePurge(1, 'Analytics.Service', false);
             })
             .then(() => {
                 done();
@@ -40,11 +36,11 @@ describe('AnalyticsService', () => {
     });
     
 
-    xit('should get some results', done => { //just sanity to see we have a conversion in the last 2 weeks
+    it('should get some results', function(done) { //just sanity to see we have a conversion in the last 2 weeks
+        this.timeout(20000);
         var from = Math.floor(Date.now()/1000) - 14*86400;
-        client.getConvertedAccounts({from: from}).then(response => {
-            expect(response).to.have.property('result');
-            expect(response.result).to.have.property('account_ids').instanceof(Array);
+        client.getConvertedAccounts({from: from, affiliate_id: 1060, limit: 10}).then(response => {
+            expect(response).to.have.property('account_ids').instanceof(Array);
             done();
         }).catch(done);
     });
