@@ -29,7 +29,7 @@ function init(router, connection) {
             else
                 res.json({ success: true, result: response.result });
         }).catch(error => {
-            req.logger(`failed attempt to fetch me for ${req.accountId}`);
+            logger(`failed attempt to fetch me for ${req.accountId}`);
             res.json({ success: false, error: 'access_denied'});
         });
     });
@@ -41,7 +41,7 @@ function init(router, connection) {
                 
                 res.json({ success: true, result: response.result});
             }).catch(error => {
-                req.logger(`failed attempt to fetch me for ${req.accountId}`);
+                logger(`failed attempt to fetch me for ${req.accountId}`);
                 res.json({ success: false, error: 'access_denied'});
             });
     });
@@ -53,7 +53,7 @@ function init(router, connection) {
                     throw new GeneralError(response.error.message, response.error.code);
                 return notificationsService.sendResetPasswordEmail({account_id: response.result.id}, false);
             }).catch(error => {
-                req.logger.error(`error sending reset password email to ${req.body.email} - ${error.message}`);
+                logger.error(`error sending reset password email to ${req.body.email} - ${error.message}`);
             }).finally(() => {
                 res.json({success: true}); //do not expose reset password errors to consumers
             });
@@ -67,7 +67,7 @@ function init(router, connection) {
         }).then(result => {
             res.json({success: true});
         }).catch(error => {
-            req.logger.error(`failed attempt to set new password for ${req.body.email} - ${error.message}`);
+            logger.error(`failed attempt to set new password for ${req.body.email} - ${error.message}`);
             res.json({success: false, error: 'access_denied'});
         });
     });
@@ -79,7 +79,7 @@ function init(router, connection) {
         }).then(result => {
             res.json({success: true});
         }).catch(error => {
-            req.logger.error(`failed attempt to verify email for ${req.body.email} - ${error.message}`);
+            logger.error(`failed attempt to verify email for ${req.body.email} - ${error.message}`);
             res.json({success: false, error: 'access_denied'});
         });
     });
