@@ -29,7 +29,7 @@ function init(router, connection) {
             else
                 res.json({ success: true, result: response.result });
         }).catch(error => {
-            logger(`failed attempt to fetch me for ${req.accountId}`);
+            logger.info(`failed attempt to fetch me for ${req.accountId}`);
             res.json({ success: false, error: 'access_denied'});
         });
     });
@@ -41,7 +41,7 @@ function init(router, connection) {
                 
                 res.json({ success: true, result: response.result});
             }).catch(error => {
-                logger(`failed attempt to fetch me for ${req.accountId}`);
+                logger.info(`failed attempt to fetch me for ${req.accountId}`);
                 res.json({ success: false, error: 'access_denied'});
             });
     });
