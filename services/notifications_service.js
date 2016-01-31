@@ -57,8 +57,12 @@ class NotificationsService extends MessageService {
     }
     
     sendResetPasswordEmail(request) {
-        if (!request.account_id) throw new Errors.AccountIdRequired();
-        return this.accounts.getAccountById({account_id: request.account_id}).then(account => {
+        return new Promise(resolve => {
+            if (!request.account_id) throw new Errors.AccountIdRequired();
+            resolve();
+        }).then(() => {
+            return this.accounts.getAccountById({account_id: request.account_id})            
+        }).then(account => {
             var clientName = `${account.last_name} ${account.first_name}`;
             var mergeVars = [
                 {name: 'name', content: clientName},
@@ -73,8 +77,12 @@ class NotificationsService extends MessageService {
     }
     
     sendWelcomeEmail(request) {
-        if (!request.account_id) throw new Errors.AccountIdRequired();
-        return this.accounts.getAccountById({account_id: request.account_id}).then(account => {
+        return new Promise(resolve => {
+            if (!request.account_id) throw new Errors.AccountIdRequired();
+            resolve();        
+        }).then(() => {
+            return this.accounts.getAccountById({account_id: request.account_id});
+        }).then(account => {
             var clientName = `${account.last_name} ${account.first_name}`;
             var mergeVars = [
                 {name: 'name', content: clientName},
@@ -89,8 +97,12 @@ class NotificationsService extends MessageService {
     }
     
     sendIframeWelcomeEmail(request) {
-        if (!request.account_id) throw new Errors.AccountIdRequired();
-        return this.accounts.getAccountById({account_id: request.account_id}).then(account => {
+        return new Promise(resolve => {
+            if (!request.account_id) throw new Errors.AccountIdRequired();
+            resolve();        
+        }).then(() => {
+            return this.accounts.getAccountById({account_id: request.account_id})            
+        }).then(account => {
             var clientName = `${account.last_name} ${account.first_name}`;
             var mergeVars = [
                 {name: 'name', content: clientName},
@@ -105,30 +117,33 @@ class NotificationsService extends MessageService {
     }
     
     send24HoursReminderEmail(request) {
-        if (!request.account_id) throw new Errors.AccountIdRequired();
-        if (!request.lender_id) throw new Errors.LenderIdRequired();
-        
         var templateName;
-        switch (request.lender_id) {
-            case 2:  templateName = 'fleximize-retention-24hrs'; break;
-            case 3:  templateName = 'iwoca-retention-24hrs'; break;
-            case 6:  templateName = 'fundingcircle-24hrs'; break;
-            case 9:  templateName = 'crowdcube-retention-24hrs'; break;
-            case 10: templateName = 'liberis-retention-24hrs'; break;
-            case 11: templateName = 'ebury-24hrs'; break;
-            case 12: templateName = 'marketinvoice-retention-24hrs'; break;
-            case 13: templateName = 'crowdcube-retention-24hrs'; break;
-            case 19: templateName = 'merchantmoney-retention-24hrs'; break;
-            case 22: templateName = 'capitalontap-retention-24hrs'; break;
-            case 23: templateName = 'yesgrowth-24hrs'; break;
-            case 24: templateName = 'growthstreet-24hrs'; break;
-            case 25: templateName = 'fundinginvoice-24hrs'; break;
-            default: 
-                logger.error(`failed finding 24h email template for lender id ${request.lender_id}`);
-                throw new Errors.InvalidEmailTemplateName();
-        };
-        
-        return this.accounts.getAccountById({account_id: request.account_id}).then(account => {
+        return new Promise(resolve => {
+            if (!request.account_id) throw new Errors.AccountIdRequired();
+            if (!request.lender_id) throw new Errors.LenderIdRequired();
+
+            switch (request.lender_id) {
+                case 2:  templateName = 'fleximize-retention-24hrs'; break;
+                case 3:  templateName = 'iwoca-retention-24hrs'; break;
+                case 6:  templateName = 'fundingcircle-24hrs'; break;
+                case 9:  templateName = 'crowdcube-retention-24hrs'; break;
+                case 10: templateName = 'liberis-retention-24hrs'; break;
+                case 11: templateName = 'ebury-24hrs'; break;
+                case 12: templateName = 'marketinvoice-retention-24hrs'; break;
+                case 13: templateName = 'crowdcube-retention-24hrs'; break;
+                case 19: templateName = 'merchantmoney-retention-24hrs'; break;
+                case 22: templateName = 'capitalontap-retention-24hrs'; break;
+                case 23: templateName = 'yesgrowth-24hrs'; break;
+                case 24: templateName = 'growthstreet-24hrs'; break;
+                case 25: templateName = 'fundinginvoice-24hrs'; break;
+                default: 
+                    logger.error(`failed finding 24h email template for lender id ${request.lender_id}`);
+                    throw new Errors.InvalidEmailTemplateName();
+            };
+            resolve();            
+        }).then(() => {
+            return this.accounts.getAccountById({account_id: request.account_id});
+        }).then(account => {
             var clientName = `${account.last_name} ${account.first_name}`;
             var templateContent = [
                 {name: 'fname', content: clientName},

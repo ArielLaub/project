@@ -63,7 +63,7 @@ var Account = bookshelf.Model.extend({
     },
     
     //Class properties
-    authenticate: function(email, password) {
+    authenticate: Promise.method(function(email, password) {
         if (!email || !password) 
             throw new Error('Email and password are both required');
         
@@ -80,7 +80,7 @@ var Account = bookshelf.Model.extend({
                     return account.toJSON();
                 });
             });
-    },
+    }),
     
     resetPassword: function(email) {
         return crypto.randomBytesAsync(20)

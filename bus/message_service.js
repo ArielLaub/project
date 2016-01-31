@@ -17,21 +17,23 @@ class MessageService {
     }
     
     _onMessage(data, id) {
-        var request = factory.decodeRequest(data);
-        if (!request) throw new Errors.InvalidRequest();
-        var method = request.method.split('.')[2]; //<package>.<service>.<method>
-        if (this[method] && typeof this[method] === 'function')
-            return this[method](request.message, id).then(result => {
-                return factory.buildResponse(request.method, result).encode().toBuffer();
-            })
-            .catch(error => {
-                if (error instanceof Error)
-                    logger.error(error.stack);
-                return factory.buildResponse(request.method, error).encode().toBuffer();                
-            });
-        else {
-            throw new Errors.InvalidServiceMethod(`invalid service method ${method}`)
-        }
+        return new Promise((resolve, reject) => {
+            var request = factory.decodeRequest(data);
+            if (!request) throw new Errors.InvalidRequest();
+            var method = request.method.split('.')[2]; //<package>.<service>.<method>
+            if (this[method] && typeof this[method] === 'function')
+                return this[method](request.message, id).then(result => {
+                    return factory.buildResponse(request.method, result).encode().toBuffer();
+                })
+                .catch(error => {
+                    if (error instanceof Error)
+                        logger.error(error.stack);
+                    return factory.buildResponse(request.method, error).encode().toBuffer();                
+                });
+            else {
+                throw new Errors.InvalidServiceMethod(`invalid service method ${method}`)
+            }            
+        })
     }
 
     init() {

@@ -23,50 +23,54 @@ class ServiceProxy {
     
     init() {
         //if we return a cached proxy it will most likely already initialized
-        if (this.initialized) return new Promise(resolve => {
-            resolve();
-        });
-        
-        var builder = factory.builder;
-        var TService = builder.lookup(this.serviceName);
-        if (!TService) 
-            throw new Errors.InvalidServiceName();            
+        return new Promise(resolve => {
+            if (this.initialized) 
+                return resolve();
 
-        var TMethods = TService.getChildren(ProtoBuf.Reflect.Service.RPCMethod); 
-        TMethods.forEach(TMethod => {
-            let methodFullName = `${this.serviceName}.${TMethod.name}`; //<package>.<service>.<method>
-            this[TMethod.name] = (requestMessage, rpc) => {
-                let request;
-                try {
-                    request = factory.buildRequest(methodFullName, requestMessage);
-                } catch (error) {
-                    logger.error(`failed building message '${TMethod.requestName}' from ${JSON.stringify(requestMessage)}\n${error}`);
-                    throw new Errors.InvalidRequest('failed parsing message');
-                }
-                return this.dispatcher.publish(request.encode().toBuffer(), `REQUEST.${methodFullName}`, rpc)
-                    .catch(error => {
-                        logger.error(error);
-                        throw new Errors.ConnectionError(`failed dispatching request to ${methodFullName}`);
-                    })
-                    .then(responseData => {
-                        let response;
-                        try {
-                            response = factory.decodeResponse(responseData);
-                        } catch (error) {
+            var builder = factory.builder;
+            var TService = builder.lookup(this.serviceName);
+            if (!TService) 
+                throw new Errors.InvalidServiceName();            
+
+            var TMethods = TService.getChildren(ProtoBuf.Reflect.Service.RPCMethod); 
+            TMethods.forEach(TMethod => {
+                var methodFullName = `${this.serviceName}.${TMethod.name}`; //<package>.<service>.<method>
+                this[TMethod.name] = (requestMessage, rpc) => {
+                    var request;
+                    try {
+                        request = factory.buildRequest(methodFullName, requestMessage);
+                    } catch (error) {
+                        logger.error(`failed building message '${TMethod.requestName}' from ${JSON.stringify(requestMessage)}\n${error}`);
+                        throw new Errors.InvalidRequest('failed parsing message');
+                    }
+                    return this.dispatcher.publish(request.encode().toBuffer(), `REQUEST.${methodFullName}`, rpc)
+                        .catch(error => {
                             logger.error(error);
-                            throw new Errors.InvalidResponse(`failed parsing result for ${methodFullName}`);
-                        }
-                        if (response.error)
-                            throw new GeneralError(response.error.message, response.error.code);
-                        
-                        return response.result.message;
-                    });                            
-            };
-        });
-
-        return this.dispatcher.init().then(() => {
+                            throw new Errors.ConnectionError(`failed dispatching request to ${methodFullName}`);
+                        })
+                        .then(responseData => {
+                            var response;
+                            try {
+                                response = factory.decodeResponse(responseData);
+                            } catch (error) {
+                                logger.error(error);
+                                throw new Errors.InvalidResponse(`failed parsing result for ${methodFullName}`);
+                            }
+                            if (response.error)
+                                throw new GeneralError(response.error.message, response.error.code);
+                            
+                            return response.result.message;
+                        });                            
+                };
+            });
+            resolve();
+        }).then(() => {
+            return this.dispatcher.init();
+        }).then(() => {
             this.initialized = true;
         });
+        
+
     }
 }
 

@@ -33,15 +33,14 @@ class AccountsService extends MessageService {
     
     create(request) {
         var account = new Account();
-        var jsonAccount;
         return account.save({email: request.email, password: request.password})
-            .then(account => {
-                jsonAccount = account.toJSON();
+            .then(newAccount => {
+                account = newAccount;
                 return this._sign({id: account.id});
             }).then(token => {
                 let result = {
-                    id: jsonAccount.id,
-                    email_verification_token:  jsonAccount.email_verification_token,
+                    id: account.id,
+                    email_verification_token:  account.get('email_verification_token'),
                     access_token: token
                 }
                 return result;
@@ -49,8 +48,8 @@ class AccountsService extends MessageService {
                 if (error.code === 'ER_DUP_ENTRY') {
                     throw new Errors.EmailAlreadyExists();
                 } else {
-                    logger.error(`unrecognized errror while creating account - ${error.messge}`);
-                    throw new Errors.InternalError();s
+                    logger.error(`unrecognized error while creating account - ${error.messge}`);
+                    throw new Errors.InternalError();
                 }     
             });
     }
