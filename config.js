@@ -14,6 +14,7 @@ class Config {
     }
     
     static get mySqlConnectionString() {
+        //return 'mysql://b9a573eb338cd6:d964821d@us-cdbr-iron-east-03.cleardb.net/heroku_52fb83d1dbc3fa7?reconnect=true'
         return 'mysql://root:@localhost/auto_test?debug=true&charset=UTF8&timezone=+0200' 
     }
     

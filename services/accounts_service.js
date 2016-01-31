@@ -5,7 +5,7 @@ var jwt = require('jsonwebtoken');
 var MessageService = require('../bus/message_service');
 var Account = require('../model/account');
 var Config = require('../config');
-var Errors = require('../Errors')
+var Errors = require('../errors')
 var utils  = require('../utils');
 var logger = utils.logger.create('services.accounts_service');
 

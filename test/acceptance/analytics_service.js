@@ -36,7 +36,7 @@ describe('AnalyticsService', () => {
     });
     
 
-    it('should get some results', function(done) { //just sanity to see we have a conversion in the last 2 weeks
+    xit('should get some results', function(done) { //just sanity to see we have a conversion in the last 2 weeks
         this.timeout(20000);
         var from = Math.floor(Date.now()/1000) - 14*86400;
         client.getConvertedAccounts({from: from, affiliate_id: 1060, limit: 10}).then(response => {
