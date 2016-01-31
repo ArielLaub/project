@@ -63,24 +63,25 @@ var Account = bookshelf.Model.extend({
     },
     
     //Class properties
-    authenticate: Promise.method(function(email, password) {
-        if (!email || !password) 
-            throw new Error('Email and password are both required');
-        
-        return new this({email: email.toLowerCase().trim()}).fetch({require: true})
-            .catch(err => {
-                if (err.message !== 'EmptyResponse')
-                    logger.error(err.stack);
-                throw new Errors.WrongEmailOrPassword();
-            })
-            .then(function(account) {
-                return bcrypt.compareAsync(password, account.get('password')).then(res => {
-                    if (!res) throw new Errors.WrongEmailOrPassword();
-                    
-                    return account.toJSON();
-                });
+    authenticate: function(email, password) {
+        return new Promise(resolve => {
+            if (!email || !password) 
+                throw new Error('Email and password are both required');
+            resolve();
+        }).then(() => {
+            return new this({email: email.toLowerCase().trim()}).fetch({require: true});    
+        }).catch(err => {
+            if (err.message !== 'EmptyResponse')
+                logger.error(err.stack);
+            throw new Errors.WrongEmailOrPassword();
+        }).then(account => {
+            return bcrypt.compareAsync(password, account.get('password')).then(res => {
+                if (!res) throw new Errors.WrongEmailOrPassword();
+                
+                return account.toJSON();
             });
-    }),
+        });
+    },
     
     resetPassword: function(email) {
         return crypto.randomBytesAsync(20)

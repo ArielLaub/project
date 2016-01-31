@@ -1,5 +1,6 @@
 'use strict'
 
+var Promise = require('bluebird');
 var Errors = require('../errors');
 var MessageListener = require('./amqp/message_listener');
 
@@ -19,7 +20,10 @@ class MessageService {
     _onMessage(data, id) {
         return new Promise((resolve, reject) => {
             var request = factory.decodeRequest(data);
-            if (!request) throw new Errors.InvalidRequest();
+            if (!request) 
+                throw new Errors.InvalidRequest();
+            resolve(request);
+        }).then(request => {
             var method = request.method.split('.')[2]; //<package>.<service>.<method>
             if (this[method] && typeof this[method] === 'function')
                 return this[method](request.message, id).then(result => {
@@ -33,19 +37,19 @@ class MessageService {
             else {
                 throw new Errors.InvalidServiceMethod(`invalid service method ${method}`)
             }            
-        })
+        });
     }
 
     init() {
         return this.listener.init(this._onMessage.bind(this), this.serviceName)
-        .then(() => {
-            return this.listener.subscribe(`REQUEST.${this.serviceName}.*`);
-        })
-        .then(() => {return this.listener.start()})
-        .catch((err) => {
-            logger.error(`error initializing service ${this.serviceName} - ${err}\n${err.stack}`);
-            throw err;
-        });
+            .then(() => {
+                return this.listener.subscribe(`REQUEST.${this.serviceName}.*`);
+            }).then(() => {
+                return this.listener.start()
+            }).catch((err) => {
+                logger.error(`error initializing service ${this.serviceName} - ${err}\n${err.stack}`);
+                throw err;
+            });
     }
 }
 

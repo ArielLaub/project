@@ -45,7 +45,7 @@ class BaseListener extends EventEmitter { //abstract
         if (!this.exchangeName) throw new Errors.ExchangeRequired();
         if (!this.connection.isConnected) throw new Errors.NotConnected();
 
-        this.handler = messageHandler        
+        this.handler = messageHandler;       
         this.isAnonymous = !queueName;
         
         return this.connection.channelOpen()
