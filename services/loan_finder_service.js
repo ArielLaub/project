@@ -47,12 +47,17 @@ class LoadFinderService extends MessageService {
     }
     
     getQualifingLenders(request) {
-        if (!request.account_id) return new Errors.AccountIdRequired();
-        if (!request.answers) return new Errors.AnswersRequired();
+        //layer one questions:
+        //1. how long have you been in business.
+        //2. revenues.
+        //3. industry.
+        //4. business type.
+        
+        if (!request.account_id) throw new Errors.AccountIdRequired();
+        if (!request.answers) throw new Errors.AnswersRequired();
         
         var resultByLenderId = new Map(); //holds results by lender id including its score
         var answerByQuestionId = new Map();
-        var q2a = answerByQuestionId.get.bind(answerByQuestionId);
         
         return Promise.each(request.answers, answer => {
             answerByQuestionId.set(answer.question_id, answer.answer_id);
@@ -62,7 +67,7 @@ class LoadFinderService extends MessageService {
                     //the score for that lender by one
                     return Promise.each(lenderIds, lenderId => {
                         if (!resultByLenderId.has(lenderId))
-                            resultByLenderId.set(lenderId, {lender_id: lenderId, score: 1});
+                            resultByLenderId.set(lenderId, {lender_id: lenderId, score: 100});
                         else
                             resultByLenderId.get(lenderId).score += 100;                        
                     });    
@@ -94,7 +99,7 @@ class LoadFinderService extends MessageService {
                     //and customer has other businesses or revenues over 5m
                     //then remove
                     if (INVOICE_LENDER_TYPE_ID === lender.company_types_id &&
-                        (request.customers_other_businesses || request.revenues_over_5m)) {
+                        (!request.customers_other_businesses || request.revenues_over_5m)) {
                         result.score = -100;
                     }
                     

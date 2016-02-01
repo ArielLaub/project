@@ -56,7 +56,7 @@ var Account = bookshelf.Model.extend({
             resolve(new Account());        
         }).then((newAccount) => {
             //for now we just flatten the profile fields to the account itself.
-            return newAccount.save(Object.assign({email: email, password: password}, profile || {}))            
+            return newAccount.save(Object.assign({email: email, password: password}, profile || {}));            
         }).then(account => {
             return account.toJSON();
         }).catch(error => {

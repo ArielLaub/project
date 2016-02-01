@@ -42,7 +42,6 @@ app.get('/', function(req, res) {
 var router = express.Router();
 app.use('/api', router);
 
-logger.error('not really');
 // API ROUTES -------------------
 // we'll get to these in a second
 var connection = new Connection();

@@ -6,7 +6,11 @@ module.exports = function(connection) {
     var accountsService = new ServiceProxy(connection, 'Accounts.Service');
     
     return function(req, res, next) {
-        var token = req.body.token || req.query.token || req.headers['x-access-token'];
+        var token = req.body.token || 
+                    req.query.token || 
+                    req.headers['x-access-token'] || 
+                    (req.headers['Authorization'] && req.headers['Authorization'].slice(0,6).toUpperCase() === 'BEARER' ? 
+                        req.headers['Authorization'].slice(6).replace(/\s+/g, '') : null);
 
         function _authenticate() {
             // decode token

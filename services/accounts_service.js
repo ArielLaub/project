@@ -46,7 +46,7 @@ class AccountsService extends MessageService {
                 return result;
             }).catch(error => {
                 if (error.code === 'ER_DUP_ENTRY') {
-                    throw new Errors.EmailAlreadyExists();
+                    return new Errors.EmailAlreadyExists();
                 } else {
                     logger.error(`unrecognized error while creating account - ${error.messge}`);
                     throw new Errors.InternalError();
@@ -79,7 +79,7 @@ class AccountsService extends MessageService {
             }
         }).catch(error => {
             logger.warn(`failed attempt to reset password for invalid email ${request.email} with error ${error.message}`);
-            throw new Errors.WrongEmailOrPassword();
+            return new Errors.WrongEmailOrPassword();
         });
     }
     

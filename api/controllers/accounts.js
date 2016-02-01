@@ -27,7 +27,7 @@ function init(router, connection) {
             if (response.error) 
                 throw new GeneralError(response.error.message, response.error.code || -1);
             else
-                res.json({ success: true, result: response.result });
+                res.json({ success: true, result: response });
         }).catch(error => {
             logger.info(`failed attempt to fetch me for ${req.accountId}`);
             res.json({ success: false, error: 'access_denied'});
