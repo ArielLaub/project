@@ -3,6 +3,7 @@
 var Promise = require('bluebird');
 var jwt = require('jsonwebtoken');
 var MessageService = require('../bus/message_service');
+var ServiceProxy = require('../bus/service_proxy');
 var Account = require('../model/account');
 var Config = require('../config');
 var Errors = require('../errors')
@@ -12,6 +13,8 @@ var logger = utils.logger.create('services.accounts_service');
 class AccountsService extends MessageService {
     constructor(connection, privateKey, publicKey) {
         super(connection, 'Accounts.Service');
+        
+        this.notifications = new ServiceProxy(connection, 'Notifications.Service');
         
         this._privateKey = privateKey || Config.jwtPrivateKey;
         this._publicKey = publicKey || Config.jwtPublicKey;
@@ -31,11 +34,20 @@ class AccountsService extends MessageService {
         };
     }
     
+    init() {
+        return super.init()
+            .then(() => {
+                return this.notifications.init();
+            });
+    }
+    
     create(request) {
         var account = new Account();
         return account.save({email: request.email, password: request.password})
             .then(newAccount => {
                 account = newAccount;
+                //send the welcome email async
+                this.notifications.sendWelcomeEmail({account_id: newAccount.id});
                 return this._sign({id: account.id});
             }).then(token => {
                 let result = {
@@ -50,7 +62,7 @@ class AccountsService extends MessageService {
                 } else {
                     logger.error(`unrecognized error while creating account - ${error.messge}`);
                     throw new Errors.InternalError();
-                }     
+                }
             });
     }
     

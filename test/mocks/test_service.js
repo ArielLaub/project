@@ -21,7 +21,7 @@ class TestService extends MessageService {
             var result = this.nextResult;
             this.nextResult = null;
             if (result instanceof Error)
-                throw result;
+                reject(result);
             else 
                 resolve(result);
         });

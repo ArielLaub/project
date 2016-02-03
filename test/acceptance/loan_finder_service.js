@@ -1,46 +1,42 @@
 'use strict'
 
 var chai = require('chai');
-var utils = require('../../utils');
+var bookshelf = require('../../model/bookshelf');
 
+var utils = require('../../utils');
 var factory = require('../mocks/message_factory');
-var LoanFinderService = require('../../services/loan_finder_service');
 var Connection = require('../../bus/amqp/connection');
+var LoanFinderService = require('../../services/loan_finder_service');
 var ServiceProxy = require('../../bus/service_proxy');
-var GeneralError = utils.error.GeneralError;
+var LoanProcess = require('../../model/loan_process');
 
 var expect = chai.expect;
+var GeneralError = utils.error.GeneralError;
 
-describe('AnalyticsService', () => {
-    var service;
-    var client;
-    var serverConnection, clientConnection;
+describe('Loan Finder Service', () => {
+    var service, client, connection;
     
-    before(done => {
-        serverConnection = new Connection();
-        clientConnection = new Connection();
-        serverConnection.connectUrl()
+    before(function(done) {
+        connection = new Connection();
+        connection.connectUrl()
             .then(() => {
-                service = new LoanFinderService(serverConnection);
+                service = new LoanFinderService(connection);
                 return service.init();
             })
             .then(() => {
-                return clientConnection.connectUrl();
+                return connection.connectUrl();
             })
             .then(() => {
-                client = new ServiceProxy(clientConnection, 'LoanFinder.Service');
+                client = new ServiceProxy(connection, 'LoanFinder.Service');
                 return client.init();
             })
             .then(() => {
-                return serverConnection.queuePurge(1, 'LoanFinder.Service', false);
-            })
-            .then(() => {
-                done();
-            });
+                return connection.queuePurge(1, 'LoanFinder.Service', false);
+            }).then(() => { done(); }).catch(done);
     });
     
 
-    it('should get some results', done => {
+    it('should get some results', function(done) {
         service.getQuestions({}).then(questions => {
             var answers = [];
             questions.forEach(question => {
@@ -60,7 +56,13 @@ describe('AnalyticsService', () => {
         }).then(results => {
             expect(results).to.have.length;
             done();
-        });
+        }).catch(done);
     });
     
+    after(function(done) {
+        connection.disconnect().then(() => {
+            done();
+        });
+    });
+
 });

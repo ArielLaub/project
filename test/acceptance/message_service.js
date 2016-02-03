@@ -17,7 +17,7 @@ describe('Message Service', () => {
     var client;
     var connection, clientConnection;
     
-    before(done => {
+    before(function(done) {
         connection = new Connection();
         clientConnection = new Connection();
         connection.connectUrl()
@@ -48,7 +48,7 @@ describe('Message Service', () => {
         quantity: 1
     };
 
-    it('should test an rpc call', done => {
+    it('should test an rpc call', function(done) {
         service.nextResult = {
             name: 'Naomi Laub',
             age: 5,
@@ -64,7 +64,7 @@ describe('Message Service', () => {
         });
     });
     
-    it('should test an error from rpc call', done => {
+    it('should test an error from rpc call', function(done) {
         service.nextResult = new GeneralError('test_error', 123456);
         client.testMethod(testRequestData).catch(err => {
             expect(err).to.exist;
@@ -74,7 +74,7 @@ describe('Message Service', () => {
         });        
     });
     
-    it('should re-initialize listeners after disconnect', done => {
+    it('should re-initialize listeners after disconnect', function(done) {
         //1. disconnect the service connection (client connection is left alone).
         //2. client sends out a request
         //3. service connection reconnected and client should get back the rpc result now
@@ -89,4 +89,14 @@ describe('Message Service', () => {
         
         connection.disconnect();
     });
+    
+    after(function(done) {
+        Promise.all([
+            connection.disconnect(),
+            clientConnection.disconnect()
+        ]).then(() => {
+            done();
+        });
+    });
+
 });

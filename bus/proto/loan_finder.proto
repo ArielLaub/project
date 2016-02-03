@@ -27,10 +27,14 @@ message GetQualifingLendersRequest {
     string affiliate_id = 2;
     string affiliate_sub_id = 3;
     repeated Answer answers = 4;
-    bool customers_other_businesses = 5;
-    bool revenues_over_5m = 6;
-    bool process_over_4k = 7;
-    bool process_card = 8;
+    int32 exact_loan_amount = 5;
+    bool customers_other_businesses = 6;
+    bool revenues_over_5m = 7;
+    bool process_over_4k = 8;
+    bool process_card = 9;
+    bool business_bank_account = 10;
+    bool business_credit_card = 11;
+    string ip = 12;
     
     message Answer {
         int32 question_id = 1;

@@ -10,6 +10,7 @@ var logger = utils.logger.create('services.loan_matcher_service');
 var questions = require('./loan_finder/questions');
 var LenderPreference = require('../model/lender_preference');
 var Lender = require('../model/lender');
+var LoanProcess = require('../model/loan_process');
 
 const HOW_MUCH_FUNDING_QUESTION_ID = 1;
 const FUNDING_PURPOSE_QUESTION_ID = 3;
@@ -58,7 +59,8 @@ class LoadFinderService extends MessageService {
         
         var resultByLenderId = new Map(); //holds results by lender id including its score
         var answerByQuestionId = new Map();
-        
+        var results = [];
+
         return Promise.each(request.answers, answer => {
             answerByQuestionId.set(answer.question_id, answer.answer_id);
             return LenderPreference.getPositiveLenderIds(answer.question_id, answer.answer_id)
@@ -171,7 +173,6 @@ class LoadFinderService extends MessageService {
             });
             
             //flatten results to an array and sort by score (descending)
-            var results = [];
             for (var value of resultByLenderId.values()) 
                  results.push(value);
             
@@ -182,7 +183,21 @@ class LoadFinderService extends MessageService {
                 results.pop();
             
             //only return results we resolved a lender for
-            return results.filter(result => !!result.name);               
+            results = results.filter(result => !!result.name);               
+        }).then(() => {
+            return LoanProcess.create(request.account_id, request.answers, {
+                exact_loan_amount: request.exact_loan_amount,
+                customers_other_businesses: request.customers_other_Businesses,
+                process_over_4k: request.process_over_4k,
+                process_card: request.process_card,
+                revenues_over_5m: request.revenues_over_5m
+                
+            }, request.results, request.ip);
+        }).then(process => {
+            results.forEach(result => {
+                result.url += `&aff_sub3=${process.process_id}`;
+            });
+            return results;
         });
     }
 }

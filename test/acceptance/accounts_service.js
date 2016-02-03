@@ -10,32 +10,31 @@ var bookshelf = require('../../model/bookshelf');
 
 var expect = chai.expect;
 
-describe('Accounts Service', () => {
+describe('Accounts Service', function() {
     var service;
     var client;
     var connection;
     
-    before(done => {
+    before(function(done) {
         connection = new Connection();
-        connection.connectUrl()
-            .then(() => {
-                service = new AccountsService(connection);
-                return service.init();
-            })
-            .then(() => {
-                client = new ServiceProxy(connection, service.serviceName);
-                return client.init();
-            })
-            .then(() => {
-                return connection.queuePurge(1, service.serviceName, false);
-            })
-            .then(() => {
-                done();
-            });
+        connection.connectUrl().then(() => {
+            service = new AccountsService(connection);
+            return service.init();
+        })
+        .then(() => {
+            client = new ServiceProxy(connection, service.serviceName);
+            return client.init();
+        })
+        .then(() => {
+            return connection.queuePurge(1, service.serviceName, false);
+        })
+        .then(() => {
+            done();
+        }).catch(done);
     });
     
     var theToken, theAccount;
-    it('should create an account', done => {
+    it('should create an account', function(done) {
         var createRequest = {
             email: 'ariel@fundbird.co.uk',
             password: '123456'
@@ -50,7 +49,7 @@ describe('Accounts Service', () => {
         }).catch(done);
     });
     
-    it('should verify email', done => {
+    it('should verify email', function(done) {
         client.verifyEmail({email: 'ariel@fundbird.co.uk', token: theAccount.email_verification_token})
             .then(response => {
                 expect(response).to.have.property('message');
@@ -58,10 +57,18 @@ describe('Accounts Service', () => {
             }).catch(done);
     });
     
-    it('should verify a token', done => {
+    it('should verify a token', function(done) {
         client.verifyToken({access_token: theToken}).then(response => {
             expect(response).to.have.property('id', theAccount.id);
             done();
         }).catch(done);
     });
+
+
+    after(function(done) {
+        connection.disconnect().then(() => {
+            done();
+        });
+    });
 });
+

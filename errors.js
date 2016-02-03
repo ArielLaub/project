@@ -29,3 +29,4 @@ module.exports.InvalidEmailTemplateName       = E(code++, 'invalid mandrill temp
 module.exports.AccountIdRequired              = E(code++, 'account id required');
 module.exports.LenderIdRequired               = E(code++, 'lender id required');
 module.exports.AnswersRequired                = E(code++, 'answers required');
+module.exports.ProcessIdRequired              = E(code++, 'process id required');

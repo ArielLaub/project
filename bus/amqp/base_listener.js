@@ -41,58 +41,61 @@ class BaseListener extends EventEmitter { //abstract
     }
     
     init(messageHandler, queueName) {
-        if (this.channel) throw new Errors.AlreadyInitialized();
-        if (!this.exchangeName) throw new Errors.ExchangeRequired();
-        if (!this.connection.isConnected) throw new Errors.NotConnected();
+        return new Promise(resolve => {
+            if (this.channel) return;
+            if (!this.exchangeName) return new Errors.ExchangeRequired();
+            if (!this.connection.isConnected) return new Errors.NotConnected();
 
-        this.handler = messageHandler;       
-        this.isAnonymous = !queueName;
-        
-        return this.connection.channelOpen()
-            .then(channel => {
-                this.channel = channel;
-                return this.connection.exchangeDeclare(channel, this.exchangeName, this.exchangeType, false, true, false, false, false);
-            })
-            .then(() => {
-                return this.connection.queueDeclare(this.channel, queueName, false, !this.isAnonymous, this.isAnonymous, false, false, {})
-            })
-            .then(queueName => {
-                this.queueName = queueName;
-                //for direct exchange listeners we can go ahead and bind the queue.
-                if (this.exchangeType === 'direct')
-                    return this.connection.queueBind(this.channel, queueName, this.exchangeName, queueName, false, {});
-                
-            })
-            .then(() => {
-                this.emit('initialized', {});
-            });
+            this.handler = messageHandler;       
+            this.isAnonymous = !queueName;
+            resolve();         
+        }).then(() => {
+            return this.connection.channelOpen()
+        }).then(channel => {
+            this.channel = channel;
+            return this.connection.exchangeDeclare(channel, this.exchangeName, this.exchangeType, false, true, false, false, false);
+        }).then(() => {
+            return this.connection.queueDeclare(this.channel, queueName, false, !this.isAnonymous, this.isAnonymous, false, false, {})
+        }).then(queueName => {
+            this.queueName = queueName;
+            //for direct exchange listeners we can go ahead and bind the queue.
+            if (this.exchangeType === 'direct')
+                return this.connection.queueBind(this.channel, queueName, this.exchangeName, queueName, false, {});            
+        }).then(() => {
+            this.emit('initialized', {});
+        });
     }
     
     start() {
-        if (!this.channel) throw new Errors.NotInitialized();
-        if (this.consumerTag) throw new Errors.AlreadyStarted();
-        if (!this.connection.isConnected) throw new Errors.NotConnected();
-        
-        this.consumerTag = cuid();
-        return this.connection.basicConsume(this.channel, this.queueName, this.consumerTag, false, this.isAnonymous, false, false, null, this.handler)
-            .then(() => {
-                this.emit('started', {});
-            });
+        return new Promise(resolve => {
+            if (!this.channel) return new Errors.NotInitialized();
+            if (this.consumerTag) return new Errors.AlreadyStarted();
+            if (!this.connection.isConnected) return new Errors.NotConnected();            
+            this.consumerTag = cuid();            
+            resolve();
+        }).then(() => {
+            return this.connection.basicConsume(this.channel, this.queueName, this.consumerTag, false, this.isAnonymous, false, false, null, this.handler)
+        }).then(() => {
+            this.emit('started', {});
+        });
     }
     
     close() {
-        if (!this.channel || !this.queueName) throw new Errors.NotInitialized();
-        if (!this.connection.isConnected) throw new Errors.NotConnected();
-        return this.connection.basicCancel(this.channel, this.consumerTag)
-            .then(() => {
-                this.consumerTag = '';
-                return this.connection.channelClose(this.channel)        
-            })
-            .then(() => {
-                this.channel = 0;
-                this.handler = null;
-                this.queueName = '';
-            });
+        return new Promise(resolve => {
+            if (!this.channel || !this.queueName) return new Errors.NotInitialized();
+            if (!this.connection.isConnected) return new Errors.NotConnected();
+            resolve();
+        }).then(() => {
+            return this.connection.basicCancel(this.channel, this.consumerTag)    
+        }).then(() => {
+            this.consumerTag = '';
+            return this.connection.channelClose(this.channel)        
+        })
+        .then(() => {
+            this.channel = 0;
+            this.handler = null;
+            this.queueName = '';
+        });
     }
 }
 

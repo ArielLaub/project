@@ -2,18 +2,25 @@ syntax = "proto3";
 
 package Analytics;
 
-message GetConvertedAccountsRequest {
+message GetConvertedProcessesRequest {
     int32 from = 1;
     int32 to = 2;
-    int32 affiliate_id = 3;
+    string affiliate_id = 3;
     repeated int32 account_ids = 4;
     int32 limit = 5;
 }
 
-message GetConvertedAccountsResponse {
-    repeated int32 account_ids = 1;
+message GetConvertedProcessesResponse {
+    repeated ConvertedProcess results = 1;
+    
+    message ConvertedProcess {
+        int32 account_id = 1;
+        int32 process_id = 2;
+        string offer_id = 3;
+        string name = 4;
+    }
 }
 
 service Service {
-    rpc getConvertedAccounts(Analytics.GetConvertedAccountsRequest) returns(Analytics.GetConvertedAccountsResponse);
+    rpc getConvertedAccounts(Analytics.GetConvertedProcessesRequest) returns(Analytics.GetConvertedProcessesResponse);
 }

@@ -11,12 +11,12 @@ var GeneralError = utils.error.GeneralError;
 
 var expect = chai.expect;
 
-describe('AnalyticsService', () => {
+describe('Analytics Service', () => {
     var service;
     var client;
     var connection;
     
-    before(done => {
+    before(function(done) {
         connection = new Connection();
         connection.connectUrl()
             .then(() => {
@@ -45,4 +45,9 @@ describe('AnalyticsService', () => {
         }).catch(done);
     });
     
+    after(function(done) {
+        connection.disconnect().then(() => {
+            done();
+        });
+    });
 });

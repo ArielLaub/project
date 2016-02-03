@@ -13,8 +13,8 @@ class ServiceProxy {
     constructor(connection, serviceName) {
         //ensure we do not initiate more than one instance per type
         //we should instead reuse identical instances so we use a cache
-        if (_cacheByName.has(serviceName)) 
-            return _cacheByName.get(serviceName);
+        //if (_cacheByName.has(serviceName)) 
+        //    return _cacheByName.get(serviceName);
             
         this.dispatcher = new MessageDispatcher(connection);
         this.serviceName = serviceName;
@@ -23,9 +23,10 @@ class ServiceProxy {
     
     init() {
         //if we return a cached proxy it will most likely already initialized
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
+
             if (this.initialized) 
-                return resolve();
+                return reject(new Errors.AlreadyInitialized());
 
             var builder = factory.builder;
             var TService = builder.lookup(this.serviceName);
@@ -68,6 +69,11 @@ class ServiceProxy {
             return this.dispatcher.init();
         }).then(() => {
             this.initialized = true;
+        }).catch(error => {
+            if (error instanceof Errors.AlreadyInitialized)
+                return;
+                
+            throw error;
         });
         
 
