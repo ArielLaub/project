@@ -2,9 +2,9 @@
 
 var express     = require('express');
 var bodyParser  = require('body-parser');
-var Connection = require('../bus/amqp/connection');
-var Config = require('../config'); // get our config file
-var utils = require('../utils');
+var Connection = require('./bus/amqp/connection');
+var Config = require('./config'); // get our config file
+var utils = require('./utils');
 var logger = utils.logger.create('api.server');
 
 var app         = express();
@@ -46,7 +46,7 @@ app.use('/api', router);
 // we'll get to these in a second
 var connection = new Connection();
 connection.connectUrl().then(() => {
-    return require('./controllers/accounts').init(router, connection);
+    return require('./api/controllers/accounts').init(router, connection);
 }).then(() => {
     app.listen(port);
     logger.info('API is served at http://localhost:' + port);

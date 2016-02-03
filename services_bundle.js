@@ -12,8 +12,6 @@ var LoanFinderService = require('./services/loan_finder_service');
 var connection = new Connection();
 
 connection.connectUrl().then(() => {
-    require('./api/api_server');
-
     var accounts = new AccountsService(connection);
     var notifications = new NotificationsService(connection);
     var analytics = new AnalyticsService(connection);
@@ -24,6 +22,5 @@ connection.connectUrl().then(() => {
         analytics.init(),
         loans.init()
     ]);
-    
 });
 

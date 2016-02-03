@@ -1,2 +1,2 @@
-web: npm run api_server
+web: npm run web
 services: npm run services

@@ -16,7 +16,6 @@ class NotificationsService extends MessageService {
         super(connection, 'Notifications.Service');
         this.mandrillClient = emailClient || new mandrill.Mandrill(Config.mandrillApiKey);
         this.accounts = new ServiceProxy(connection, 'Accounts.Service');
-        
     }
 
     _getPayloadTemplate(templateName, templateContent, subject, tags, clientName, clientEmail, mergeVars) {
