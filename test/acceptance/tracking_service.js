@@ -4,14 +4,14 @@ var chai = require('chai');
 var utils = require('../../utils');
 
 var factory = require('../mocks/message_factory');
-var AnalyticsService = require('../../services/analytics_service');
+var TrackingService = require('../../services/tracking_service');
 var Connection = require('../../bus/amqp/connection');
 var ServiceProxy = require('../../bus/service_proxy');
 var GeneralError = utils.error.GeneralError;
 
 var expect = chai.expect;
 
-describe('Analytics Service', () => {
+describe('Tracking Service', () => {
     var service;
     var client;
     var connection;
@@ -20,15 +20,15 @@ describe('Analytics Service', () => {
         connection = new Connection();
         connection.connectUrl()
             .then(() => {
-                service = new AnalyticsService(connection);
+                service = new TrackingService(connection);
                 return service.init();
             })
             .then(() => {
-                client = new ServiceProxy(connection, 'Analytics.Service');
+                client = new ServiceProxy(connection, 'Tracking.Service');
                 return client.init();
             })
             .then(() => {
-                return connection.queuePurge(1, 'Analytics.Service', false);
+                return connection.queuePurge(1, 'Tracking.Service', false);
             })
             .then(() => {
                 done();

@@ -4,20 +4,21 @@ package Accounts;
 
 import "./platform.proto";
 
+message Profile {
+    string first_name = 1;
+    string last_name = 2;
+    string company = 3;
+    string company_number = 4;
+    string postal_code = 5;
+    string phone_number = 6;
+}
+
 message CreateRequest {
     string email = 1;
     string password = 2;
     Profile profile = 3;
     string affiliate_id = 4;
     string referrer_id = 5;
-    
-    message Profile {
-        string first_name = 1;
-        string last_name = 2;
-        string company_number = 3;
-        string postal_code = 4;
-        string phone_number = 5;
-    }
 }
 
 message AuthenticateRequest {
@@ -28,6 +29,8 @@ message AuthenticateRequest {
 message AuthenticateResponse {
     int32 id = 1;
     string access_token = 2;
+    Profile profile = 3;
+    
 };
 
 message TokenRequest {
@@ -38,6 +41,7 @@ message CreateResponse {
     int32 id = 1;
     string access_token = 2;
     string email_verification_token = 3;
+    Profile profile = 4;
 }
 
 message TokenResponse {

@@ -7,8 +7,10 @@ var logger = utils.logger.create('model.lender_type');
 var Errors = require('../errors');
 var Lender = require('./lender');
 
+const TABLE_NAME = 'info_company_question';
+
 var LenderPreference = bookshelf.Model.extend({
-    tableName: 'info_company_question',
+    tableName: TABLE_NAME,
 
     constructor: function() {
         bookshelf.Model.apply(this, arguments);
@@ -19,6 +21,8 @@ var LenderPreference = bookshelf.Model.extend({
     }
 }, 
 {            
+    tableName: TABLE_NAME,
+
     getByLenderId: function(lenderId) {
         return new this({company_fk: lenderId}).fetchAll({require: false});
     },

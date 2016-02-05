@@ -3,12 +3,12 @@
 var chai = require('chai');
 var utils = require('../../utils');
 var bookshelf = require('../../model/bookshelf');
-var MockAnalyticsService = require('../mocks/mock_analytics_service');
+var MockTrackingService = require('../mocks/mock_tracking_service');
 var Connection = require('../../bus/amqp/connection');
-var MessageDispatcher = require('../../bus/amqp/message_dispatcher');
 var ServiceProxy = require('../../bus/service_proxy');
 var LoanProcess = require('../../model/loan_process');
 var fetchConversions = require('../../scheduled_tasks/fetch_conversions');
+var seed = require('../mocks/seed');
 var GeneralError = utils.error.GeneralError;
 
 var expect = chai.expect;
@@ -24,34 +24,21 @@ describe('Fetch Conversions', function() {
 
         connection.connectUrl()
             .then(() => {
-                service = new MockAnalyticsService(connection);
+                service = new MockTrackingService(connection);
                 return service.init();
             })
             .then(() => {
                 return clientConnection.connectUrl();
             })
             .then(() => {
-                client = new ServiceProxy(clientConnection, 'Analytics.Service');
+                client = new ServiceProxy(clientConnection, 'Tracking.Service');
                 return client.init();
             })
             .then(() => {
-                return connection.queuePurge(1, 'Analytics.Service', false);
+                return connection.queuePurge(1, 'Tracking.Service', false);
             })
             .then(() => {
-                return bookshelf.knex.schema.dropTableIfExists('users_processes');
-            })
-            .then(() => {
-                return bookshelf.knex.schema.createTable('users_processes', function (table) {
-                    table.increments();
-                    table.timestamps();
-                    table.integer('process_id');
-                    table.integer('user_id');
-                    table.text('form_fields');
-                    table.text('results');
-                    table.text('has_offers_data');
-                    table.string('ip', 60);
-                    table.string('country_by_ip', 100);
-                });                
+                return seed.resetLoanProcesses();                
             })
             .then(() => {
                 done();
@@ -62,15 +49,14 @@ describe('Fetch Conversions', function() {
     var accountId = 1;
     var lastConvertedTime;
     it('should convert a loan process', function(done) {
-        LoanProcess.create(accountId, [
-            {question_id: 1, answer_id: 1},
-            {question_id: 2, answer_id: 2}
-        ], {
-            business_bank_acount: true,
+        LoanProcess.create(accountId, {"1":"1", "2": "2"}, {
+            business_bank_account: true,
             business_credit_card: true,
             customers_other_businesses: false,
             revenues_over_5m: false,
-            process_over_4k: false
+            process_card: false,
+            process_over_2500: false,
+            personal_guarentee: true
         }, [12, 9, 13, 14], '127.0.0.1').then(process => {
             processId = process.process_id;
         }).then(() => {
@@ -97,15 +83,14 @@ describe('Fetch Conversions', function() {
     });
     
     it('should not convert if no has offers data yet', function(done) {
-        LoanProcess.create(accountId, [
-            {question_id: 1, answer_id: 10},
-            {question_id: 2, answer_id: 20}
-        ], {
-            business_bank_acount: false,
+        LoanProcess.create(accountId, {"1": "10", "2": "20"}, {
+            business_bank_account: false,
             business_credit_card: true,
             customers_other_businesses: true,
             revenues_over_5m: false,
-            process_over_4k: false
+            process_card: true,
+            process_over_2500: false,
+            personal_guarentee: false
         }, [12, 9, 13, 14], '127.0.0.1').then(process => {
             processId = process.process_id;
         }).then(() => {

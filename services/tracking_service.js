@@ -6,11 +6,11 @@ var Config = require('../config');
 var Errors = require('../errors');
 
 var utils  = require('../utils');
-var logger = utils.logger.create('services.analytics_service');
-var hasOffers = require('./analytics/has_offers');
+var logger = utils.logger.create('services.tracking_service');
+var hasOffers = require('./tracking/has_offers');
 
 function dateString(timestamp) {
-    var date = new Date(timestamp*1000);
+    var date = utils.ticksToDate(timestamp);
     var Y = date.getFullYear();
     var m = date.getMonth() + 1;
     var d = date.getDate();
@@ -24,9 +24,9 @@ function dateString(timestamp) {
 const PROCESS_ID_FIELD_NAME = 'affiliate_info3';
 const ACCOUNT_ID_FIELD_NAME = 'affiliate_info4';
 
-class AnalyticsService extends MessageService {
+class TrackingService extends MessageService {
     constructor(connection) {
-        super(connection, 'Analytics.Service');
+        super(connection, 'Tracking.Service');
     }
     
     getConvertedAccounts(request) {
@@ -88,4 +88,4 @@ class AnalyticsService extends MessageService {
     }
 }
 
-module.exports = AnalyticsService;
+module.exports = TrackingService;

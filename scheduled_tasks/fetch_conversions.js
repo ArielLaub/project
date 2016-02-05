@@ -12,14 +12,14 @@ const FUNDBIRD_AFFILIATE_ID = '1060'; //we only fetch convertions for our accoun
 function execute() {
     logger.info('starting fetch conversions scheduled task');
     var connection = new Connection();
-    var analyticsService = new ServiceProxy(connection, 'Analytics.Service');
+    var trackingService = new ServiceProxy(connection, 'Tracking.Service');
     return connection.connectUrl().then(() => {
-        return analyticsService.init();
+        return trackingService.init();
     }).then(() => {
         return LoanProcess.getLastConvertedTime();
     }).then(from => {
         logger.info(`fetching conversion starting from ${from}`);
-        return analyticsService.getConvertedAccounts({
+        return trackingService.getConvertedAccounts({
             from: utils.dateToTicks(from), 
             affiliate_id: FUNDBIRD_AFFILIATE_ID, 
             limit: 999

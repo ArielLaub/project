@@ -6,9 +6,9 @@ var factory = require('./message_factory');
 var utils = require('../../utils');
 var GeneralError = utils.error.GeneralError;
 
-class MockAnalyticsService extends MessageService {
+class MockTrackingService extends MessageService {
     constructor(connection) {
-        super(connection, 'Analytics.Service');
+        super(connection, 'Tracking.Service');
         this._data = [];
     }
     
@@ -33,4 +33,4 @@ class MockAnalyticsService extends MessageService {
     
 }
 
-module.exports = MockAnalyticsService;
+module.exports = MockTrackingService;

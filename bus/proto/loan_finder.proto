@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package LoanFinder;
 
+import "./platform.proto";
+
 message GetQuestionsRequest {
     string country_code = 1;
 }
@@ -22,24 +24,27 @@ message GetQuestionsResponse {
     }
 }
 
+message FormFields {
+    bool other_industry = 1;
+    int32 exact_loan_amount = 2;
+    int32 exact_business_established = 3;
+    bool business_bank_account = 4;
+    bool business_credit_card = 5;
+    bool process_card = 6;
+    bool process_over_2500 = 7;
+    bool customers_other_businesses = 8;
+    bool revenues_over_5m = 9;
+    bool personal_guarantee = 10;
+    map<int32, int32> answer = 11;
+
+}
+
 message GetQualifingLendersRequest {
     int32 account_id = 1;
     string affiliate_id = 2;
     string affiliate_sub_id = 3;
-    repeated Answer answers = 4;
-    int32 exact_loan_amount = 5;
-    bool customers_other_businesses = 6;
-    bool revenues_over_5m = 7;
-    bool process_over_4k = 8;
-    bool process_card = 9;
-    bool business_bank_account = 10;
-    bool business_credit_card = 11;
-    string ip = 12;
-    
-    message Answer {
-        int32 question_id = 1;
-        int32 answer_id = 2;
-    }
+    FormFields form_fields = 5;
+    string ip = 6;
 }
 
 message GetQualifingLendersResponse {
@@ -54,7 +59,13 @@ message GetQualifingLendersResponse {
     }
 }
 
+message ApplicationResponse {
+    repeated string results = 2 [packed=true];
+    LoanFinder.FormFields form_fields = 3;
+}
+
 service Service {
-    rpc getQuestions(GetQuestionsRequest) returns(GetQuestionsResponse);
-    rpc getQualifingLenders(GetQualifingLendersRequest) returns(GetQualifingLendersResponse);
+    rpc getQuestions(LoanFinder.GetQuestionsRequest) returns(LoanFinder.GetQuestionsResponse);
+    rpc getQualifingLenders(LoanFinder.GetQualifingLendersRequest) returns(LoanFinder.GetQualifingLendersResponse);
+    rpc getAccountLastApplication(Platform.AccountIdRequest) returns(LoanFinder.ApplicationResponse);
 }

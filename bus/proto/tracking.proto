@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package Analytics;
+package Tracking;
 
 message GetConvertedProcessesRequest {
     int32 from = 1;
@@ -22,5 +22,5 @@ message GetConvertedProcessesResponse {
 }
 
 service Service {
-    rpc getConvertedAccounts(Analytics.GetConvertedProcessesRequest) returns(Analytics.GetConvertedProcessesResponse);
+    rpc getConvertedAccounts(Tracking.GetConvertedProcessesRequest) returns(Tracking.GetConvertedProcessesResponse);
 }

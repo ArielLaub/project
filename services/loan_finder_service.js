@@ -47,6 +47,29 @@ class LoadFinderService extends MessageService {
         return Promise.resolve(questions);
     }
     
+    getProcessesByStatusFrom(request) {
+        return LoanProcess.getProcessesByStatusFrom(
+            request.status,
+            utils.ticksToDate(request.from),
+            999, 0 //page size and index
+        );
+    }
+    
+    getAccountLastApplication(request) {
+        return new Promise(resolve => {
+            if (!request.account_id) throw new Errors.AccountIdRequired();
+            resolve();                        
+        }).then(() => {
+            return LoanProcess.getLastByAccountId(request.account_id);
+        }).then(process => {
+            return {
+                form_fields: process.form_fields,
+                results: process.results,
+                status: process.status
+            }
+        });
+    }
+    
     getQualifingLenders(request) {
         //layer one questions:
         //1. how long have you been in business.
@@ -54,26 +77,31 @@ class LoadFinderService extends MessageService {
         //3. industry.
         //4. business type.
         
-        if (!request.account_id) throw new Errors.AccountIdRequired();
-        if (!request.answers) throw new Errors.AnswersRequired();
-        
         var resultByLenderId = new Map(); //holds results by lender id including its score
-        var answerByQuestionId = new Map();
         var results = [];
-
-        return Promise.each(request.answers, answer => {
-            answerByQuestionId.set(answer.question_id, answer.answer_id);
-            return LenderPreference.getPositiveLenderIds(answer.question_id, answer.answer_id)
-                .then(lenderIds => {
-                    //for each lender that this answer qualifies for we increase
-                    //the score for that lender by one
-                    return Promise.each(lenderIds, lenderId => {
-                        if (!resultByLenderId.has(lenderId))
-                            resultByLenderId.set(lenderId, {lender_id: lenderId, score: 100});
-                        else
-                            resultByLenderId.get(lenderId).score += 100;                        
-                    });    
-                });
+        var answers;
+        var formFields;
+        
+        return new Promise(resolve => {
+            if (!request.account_id) throw new Errors.AccountIdRequired();
+            if (!request.form_fields || !request.form_fields.answer) throw new Errors.AnswersRequired();
+            formFields = request.form_fields;
+            answers = request.form_fields.answer;
+            resolve();            
+        }).then(() => {
+            return Promise.each(Object.keys(answers), questionId => {
+                return LenderPreference.getPositiveLenderIds(questionId, answers[questionId])
+                    .then(lenderIds => {
+                        //for each lender that this answer qualifies for we increase
+                        //the score for that lender by one
+                        return Promise.each(lenderIds, lenderId => {
+                            if (!resultByLenderId.has(lenderId))
+                                resultByLenderId.set(lenderId, {lender_id: lenderId, score: 100});
+                            else
+                                resultByLenderId.get(lenderId).score += 100;                        
+                        });    
+                    });
+            })            
         }).then(() => {
             return Lender.getAll();          
         }).then(lenders => {
@@ -101,21 +129,21 @@ class LoadFinderService extends MessageService {
                     //and customer has other businesses or revenues over 5m
                     //then remove
                     if (INVOICE_LENDER_TYPE_ID === lender.company_types_id &&
-                        (!request.customers_other_businesses || request.revenues_over_5m)) {
+                        (!formFields.customers_other_businesses || formFields.revenues_over_5m)) {
                         result.score = -100;
                     }
                     
                     // Asset Based Finance Type
                     // get priority if "Loan purpose" is related to "Purchase assets".
                     if (ASSET_BASED_FINANCE_TYPE_ID === lender.company_types_id &&
-                        PURCHASE_ASSETS_ANSWER_ID === answerByQuestionId.get(FUNDING_PURPOSE_QUESTION_ID)) {
+                        PURCHASE_ASSETS_ANSWER_ID === answers[FUNDING_PURPOSE_QUESTION_ID]) {
                         result.score += 6
                     }
 
                     // Property Loan Type
                     // get priority if "Loan purpose" is related to "Purchase assets".
                     if (PROPERY_LOAN_TYPE_ID === lender.company_types_id &&
-                        REAL_ESTATE_ANSWER_ID === answerByQuestionId.get(FUNDING_PURPOSE_QUESTION_ID)) {
+                        REAL_ESTATE_ANSWER_ID === answers[FUNDING_PURPOSE_QUESTION_ID]) {
                         result.score += 5
                     }
                     
@@ -129,8 +157,8 @@ class LoadFinderService extends MessageService {
                     // if invoices + business 6 month + min revenues 100k
                     //TODO: invoices?
                     if (MARKET_INVOICE_LENDER_ID === lender.id &&
-                        MORE_THAN_6_MONTHS_OLD_ANSWER_IDS.indexOf(answerByQuestionId.get(HOW_LONG_IN_BUSINESS_QUESTION_ID)) !== -1 &&
-                        MORE_THAN_100K_REVENUES_ANSWER_IDS.indexOf(answerByQuestionId.get(BUSINESS_YEARLY_REVENUE_QUESTION_ID)) !== -1) {
+                        MORE_THAN_6_MONTHS_OLD_ANSWER_IDS.indexOf(answers[HOW_LONG_IN_BUSINESS_QUESTION_ID]) !== -1 &&
+                        MORE_THAN_100K_REVENUES_ANSWER_IDS.indexOf(answers[BUSINESS_YEARLY_REVENUE_QUESTION_ID]) !== -1) {
                         result.score += 10;
                     }
                     
@@ -144,28 +172,28 @@ class LoadFinderService extends MessageService {
                     // (if invoices + business 12 month + min revenues 10k)
                     //TODO: invoices?
                     if (INVOICE_CYCLE_LENDER_ID === lender.id &&
-                        MORE_THAN_12_MONTHS_OLD_ANSWER_IDS.indexOf(answerByQuestionId.get(HOW_LONG_IN_BUSINESS_QUESTION_ID)) !== -1 &&
-                        MORE_THAN_10K_REVENUES_ANSWER_IDS.indexOf(answerByQuestionId.get(BUSINESS_YEARLY_REVENUE_QUESTION_ID)) !== -1) {
+                        MORE_THAN_12_MONTHS_OLD_ANSWER_IDS.indexOf(answers[HOW_LONG_IN_BUSINESS_QUESTION_ID]) !== -1 &&
+                        MORE_THAN_10K_REVENUES_ANSWER_IDS.indexOf(answers[BUSINESS_YEARLY_REVENUE_QUESTION_ID]) !== -1) {
                         result.score += 8;
                     }
                     
                     // Liberis get priority if has card payments and over 4k.
                     if (LIBERIS_LENDER_ID === lender.id &&
-                        request.process_card &&
-                        request.process_over_4k) {
+                        formFields.process_card &&
+                        formFields.process_over_2500) {
                         result.score += 7;
                     }
                     
                     // Ebury
                     if (EBURY_LENDER_ID === lender.id) {
                         //if purpose is Purchase Inventory or Import
-                        if ([PURCHASE_INVENTORY_ANSWER_ID,IMPORT_ANSWER_ID].indexOf(answerByQuestionId.get(FUNDING_PURPOSE_QUESTION_ID)) !== -1) {
+                        if ([PURCHASE_INVENTORY_ANSWER_ID,IMPORT_ANSWER_ID].indexOf(answers[FUNDING_PURPOSE_QUESTION_ID]) !== -1) {
                             result.score += 4;         
                         }
                                    
                         //amount <50k pounds
                         //then remove.
-                        if (LESS_THAN_50K_FUNDING_ANSWER_IDS.indexOf(answerByQuestionId.get(HOW_MUCH_FUNDING_QUESTION_ID)) !== -1) { 
+                        if (LESS_THAN_50K_FUNDING_ANSWER_IDS.indexOf(answers[HOW_MUCH_FUNDING_QUESTION_ID]) !== -1) { 
                             result.score = -100;                 
                         }
                     }
@@ -185,14 +213,7 @@ class LoadFinderService extends MessageService {
             //only return results we resolved a lender for
             results = results.filter(result => !!result.name);               
         }).then(() => {
-            return LoanProcess.create(request.account_id, request.answers, {
-                exact_loan_amount: request.exact_loan_amount,
-                customers_other_businesses: request.customers_other_Businesses,
-                process_over_4k: request.process_over_4k,
-                process_card: request.process_card,
-                revenues_over_5m: request.revenues_over_5m
-                
-            }, request.results, request.ip);
+            return LoanProcess.create(request.account_id, answers, formFields, request.results, request.ip);
         }).then(process => {
             results.forEach(result => {
                 result.url += `&aff_sub3=${process.process_id}`;

@@ -13,6 +13,7 @@ var logger = utils.logger.create('api.controllers.accounts');
 function init(router, connection) {
     var accountsService = new ServiceProxy(connection, 'Accounts.Service');
     var notificationsService = new ServiceProxy(connection, 'Notifications.Service');
+    var loanFinderService = new ServiceProxy(connection, 'LoanFinder.Service');
     
     var authenticate = Authenticate(connection);
     
@@ -23,52 +24,51 @@ function init(router, connection) {
         accountsService.authenticate({
             email: req.body.email,
             password: req.body.password
-        }).then(response => {
-            if (response.error) 
-                throw new GeneralError(response.error.message, response.error.code || -1);
-            else
-                res.json({ success: true, result: response });
+        }).then(result => {
+            loanFinderService.getAccountLastApplication({account_id: result.id}).then(result => {
+                if (result) {
+                    Object.apply(result, result.form_fields);
+                }
+                res.set('Authorization', `Bearer ${result.token}`);
+                res.status(200).json({ success: true, result: result });
+            });
         }).catch(error => {
             logger.info(`failed attempt to fetch me for ${req.accountId}`);
-            res.json({ success: false, error: 'access_denied'});
+            res.status(401).json({ success: false, error: 'access_denied'});
         });
     });
     
     routes.get('/me', authenticate, function(req, res) {
         accountsService.getAccountById({account_id: req.accountId})
-            .then(response => {
-                if (response.error) throw new GeneralError(response.error.message, response.error.code)
-                
-                res.json({ success: true, result: response.result});
+            .then(result => {
+                res.status(200).json({ success: true, result: result});
             }).catch(error => {
                 logger.info(`failed attempt to fetch me for ${req.accountId}`);
-                res.json({ success: false, error: 'access_denied'});
+                res.status(401).json({ success: false, error: 'access_denied'});
             });
     });
     
     routes.post('/resetPassword', function(req, res) {
         accountsService.resetPassword({email: req.body.email})
-            .then(response => {
-                if (response.value === 'error') 
-                    throw new GeneralError(response.error.message, response.error.code);
-                return notificationsService.sendResetPasswordEmail({account_id: response.result.id}, false);
+            .then(result => {
+                return notificationsService.sendResetPasswordEmail({account_id: result.id}, false);
             }).catch(error => {
                 logger.error(`error sending reset password email to ${req.body.email} - ${error.message}`);
             }).finally(() => {
-                res.json({success: true}); //do not expose reset password errors to consumers
+                res.status(200).json({success: true}); //do not expose reset password errors to consumers
             });
     }); 
     
-    routes.post('/setPassword', function(req, res) {
+    routes.post('/changePassword', function(req, res) {
         accountsService.setPassword({
             email: req.body.email,
             old_password_or_token: req.body.old_password_or_token,
             new_password: req.body.new_password
         }).then(result => {
-            res.json({success: true});
+            res.status(200).json({success: true});
         }).catch(error => {
             logger.error(`failed attempt to set new password for ${req.body.email} - ${error.message}`);
-            res.json({success: false, error: 'access_denied'});
+            res.status(401).json({success: false, error: 'access_denied'});
         });
     });
     
@@ -77,10 +77,10 @@ function init(router, connection) {
             email: req.body.email,
             email_verification_token: req.body.email_verifycation_token
         }).then(result => {
-            res.json({success: true});
+            res.status(200).json({success: true});
         }).catch(error => {
             logger.error(`failed attempt to verify email for ${req.body.email} - ${error.message}`);
-            res.json({success: false, error: 'access_denied'});
+            res.status(401).json({success: false, error: 'access_denied'});
         });
     });
     
@@ -90,15 +90,16 @@ function init(router, connection) {
             password: req.body.password,
             profile: req.body.profile
         }).then(result => {
-            res.json({success: true, result: result});
+            res.status(200).json({success: true, result: result});
         }).catch(error => {
-            res.json({success: false, error: error.message, code: error.code});
+            res.status(401).json({success: false, error: error.message, code: error.code});
         });
     });
     
     return Promise.all([
         accountsService.init(),
-        notificationsService.init()
+        notificationsService.init(),
+        loanFinderService.init()
     ]).then(() => {
         router.use('/accounts', routes);
     });

@@ -6,7 +6,6 @@ var utils = require('../../utils');
 var factory = require('../mocks/message_factory');
 var TestService = require('../mocks/test_service');
 var Connection = require('../../bus/amqp/connection');
-var MessageDispatcher = require('../../bus/amqp/message_dispatcher');
 var ServiceProxy = require('../../bus/service_proxy');
 var GeneralError = utils.error.GeneralError;
 

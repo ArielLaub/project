@@ -21,7 +21,7 @@ class AccountsService extends MessageService {
         this._sign = (payload) => {
             return new Promise((resolve, reject) => {
                 var _key = {key: this._privateKey, passphrase: '123456'};
-                resolve(jwt.sign(payload, _key, { algorithm: 'RS256'}));
+                resolve(jwt.sign(payload, _key, { algorithm: 'RS256', expiresIn: '365d'}));
             });
         };
         this._verify = (token) => {
@@ -44,10 +44,10 @@ class AccountsService extends MessageService {
     create(request) {
         var account = new Account();
         return account.save({email: request.email, password: request.password})
-            .then(newAccount => {
+            .tap(account => {
+                return this.notifications.sendWelcomeEmail({account_id: account.id});                
+            }).then(newAccount => {
                 account = newAccount;
-                //send the welcome email async
-                this.notifications.sendWelcomeEmail({account_id: newAccount.id});
                 return this._sign({id: account.id});
             }).then(token => {
                 let result = {
@@ -60,22 +60,29 @@ class AccountsService extends MessageService {
                 if (error.code === 'ER_DUP_ENTRY') {
                     return new Errors.EmailAlreadyExists();
                 } else {
-                    logger.error(`unrecognized error while creating account - ${error.messge}`);
+                    logger.error(`unrecognized error while creating account - ${error.message}`);
                     throw new Errors.InternalError();
                 }
             });
     }
     
     authenticate(request) {
-        var accountId;
         return Account.authenticate(request.email, request.password).then(account => {
-            accountId = account.id;
-            return this._sign({id: account.id});
-        }).then(token => {
-            return {
-                access_token: token,
-                id: accountId
-            }
+            return this._sign({id: account.id}).then(token => {
+                return {
+                    access_token: token,
+                    id: account.id,
+                    profile: {
+                        first_name: accountget('first_name'),
+                        last_name: account.get('last_name'),
+                        company: account.get('company'),
+                        company_number: account.get('company_number'),
+                        phone: account.get('phone'),
+                        postal_code: account.get('postal_code'),
+                        
+                    }
+                }
+            });
         });
     }
     

@@ -14,7 +14,6 @@ class Config {
     }
     
     static get mySqlConnectionString() {
-        //return 'mysql://b9a573eb338cd6:d964821d@us-cdbr-iron-east-03.cleardb.net/heroku_52fb83d1dbc3fa7?reconnect=true'
         return 'mysql://root:@localhost/auto_test?debug=true&charset=UTF8&timezone=+0200' 
     }
     
@@ -73,6 +72,7 @@ class Development extends Config {
 
 class Production extends Config {
     static get mySqlConnectionString() {
+        //mysql://root:dbfun%40res1@52.6.225.136/fundbird?reconnect=true
         return process.env.CLEARDB_DATABASE_URL;
     }
     

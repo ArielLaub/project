@@ -132,7 +132,7 @@ class MessageFactory {
                 }));                                       
             } 
             catch (error) {
-                logger.error(`error building response message with data ${JSON.stringify(obj)}`);
+                logger.error(`error building response message ${messageType} with data ${JSON.stringify(obj)}`);
                 throw error;
             }
         }

@@ -1,4 +1,5 @@
 'use strict'
+
 var Promise = require('bluebird');
 var express = require('express');
 var ServiceProxy = require('../../bus/service_proxy');
@@ -22,12 +23,20 @@ function init(router, connection) {
     routes.post('/find', authenticate, function(req, res) {
         loansService.getQualifingLenders({
             account_id: req.accountId,
-            affiliate_id: req.affiliate_id,
-            answers: req.answers,
-            customers_other_businesses: req.customers_other_businesses,
-            revenues_over_5m: req.revenues_over_5m,
-            process_over_4k: req.process_over_4k,
-            process_card: req.process_card
+            affiliate_id: req.body.affiliate_id,
+            form_fields: {
+                other_industry: !!req.body.other_industry,
+                exact_loan_amount: req.body.exact_loan_amount,
+                exact_business_established: req.body.exact_business_established,
+                customers_other_businesses: !!req.body.customers_other_businesses,
+                revenues_over_5m: !!req.body.revenues_over_5m,
+                process_over_2500: !!req.body.process_over_2500,
+                process_card: !!req.body.process_card,
+                business_bank_account: !!req.body.business_bank_account,
+                business_credit_card: !!req.body.business_credit_card,
+                personal_guarantee: !!req.body.personal_guarantee,
+                answer: req.body.answers
+            }
         }).then(result => {
             res.json({success: true, result: result});
         }).catch(error => {

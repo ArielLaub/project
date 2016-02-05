@@ -10,6 +10,7 @@ var Account = require('./lender');
 const ACCOUNT_ID_FIELD = 'user_id';
 const PROCESS_ID_FIELD = 'process_id';
 
+
 const TABLE_NAME = 'users_processes';
 
 var LoanProcess = bookshelf.Model.extend({
@@ -22,12 +23,12 @@ var LoanProcess = bookshelf.Model.extend({
     account: function() {
         return this.hasOne(Account, ACCOUNT_ID_FIELD);
     },
-    
+        
     exToJSON: function() {
         var json = this.toJSON();
         
+        //TODO: mysql doesn't support json natively remove once we move to mongo
         try {if (json.form_fields) json.form_fields = JSON.parse(json.form_fields);} catch(e) {}
-        try {if (json.answer) json.answer = JSON.parse(json.answer);} catch(e) {}
         try {if (json.results) json.results = JSON.parse(json.results);} catch(e) {}
         try {if (json.has_offers_data) json.has_offers_data = JSON.parse(json.has_offers_data);} catch(e) {}
         
@@ -35,26 +36,17 @@ var LoanProcess = bookshelf.Model.extend({
     }
 }, 
 {   
+    tableName: TABLE_NAME,
+
     create: function(accountId, answers, formFields, results, ip) {
         return new Promise(resolve => {
             if (!accountId) return new Errors.AccountIdRequired();
                         
             //some conversions for backwards compatibility with the old app
-            formFields.answer = {};
-            answers.forEach(answer => {
-                formFields.answer[String(answer.question_id)] = String(answer.answer_id);
-            });
-            formFields.business_bank_acount = formFields.business_bank ? '1' : '';
-            formFields.business_credit_card = formFields.business_credit_card ? '1' : '';
-            formFields.customers_other_businesses = formFields.customers_other_businesses ? '1' : '';
-            formFields.revenues_over_5m = formFields.revenues_over_5m ? '1' : '';
-            formFields.process_over_4k = formFields.process_over_4k ? '1' : '';
+            formFields.answer = answers
             resolve();            
         }).then(() => {
-            return new this().query(qb => {
-                qb.where(ACCOUNT_ID_FIELD, '=', accountId)
-                qb.orderBy('id','DESC');
-            }).fetch({require: false});
+            return this.getLastByAccountId(accountId);
         }).then(lastProcess => {
             var fields = {
                 created_at: new Date(),
@@ -63,7 +55,7 @@ var LoanProcess = bookshelf.Model.extend({
                 ip: ip || 'N/A'
             };
             fields[ACCOUNT_ID_FIELD] = accountId;
-            fields[PROCESS_ID_FIELD] = lastProcess ? lastProcess.get('process_id') + 1 : 1;
+            fields[PROCESS_ID_FIELD] = lastProcess ? lastProcess.process_id + 1 : 1;
             return (new this).save(fields);  
         }).then(process => {
             return process.exToJSON();
@@ -73,13 +65,14 @@ var LoanProcess = bookshelf.Model.extend({
     getLastByAccountId: function(accountId) {
         return new Promise(resolve => {
             if (!accountId) return new Errors.AccountIdRequired();          
-            
+            resolve();
         }).then(() => {
-            var filter = {};
-            filter[ACCOUNT_ID_FIELD] =  accountId;
-            return new this(filter).fetch({withRelated: ['account'], require: true}).then(result => {
-                return result.exToJSON();
-            });
+            return new this().query(qb => {
+                qb.where(ACCOUNT_ID_FIELD, '=', accountId);
+                qb.orderBy('id','DESC');
+            }).fetch({require: false});
+        }).then(process => {   
+            return process ? process.exToJSON() : null;
         });
     },
     
@@ -99,7 +92,8 @@ var LoanProcess = bookshelf.Model.extend({
         var process = new this();
         return process.where(filter).save({
             has_offers_data: JSON.stringify(hasOffersData),
-            updated_at: new Date()
+            updated_at: new Date(),
+            status: this.STATUS_CONVERTED
         }, {
             require: true,
             method: 'update'
@@ -117,7 +111,37 @@ var LoanProcess = bookshelf.Model.extend({
                     return new Date(0);
                 }
             });
-    }
+    },
+    
+    getByStatus: function(status, pageSize, pageIndex) {
+        return new this().query(qb => {
+            qb.where('status', '=', status);
+            if (pageSize)
+                qb.limit(pageSize);
+            if (pageIndex)
+                qb.offset(pageSize*pageIndex);
+                
+            qb.orderBy('updated_at', 'DESC');
+        }).fetchAll({require: false}).then(processes => {
+            var results = [];
+            if (processes && processes.length > 0) {
+                processes.forEach(process => {
+                    results.push(process.exToJSON());
+                });
+            }
+        });
+    },
+    
+    setStatusSafe: function(id, oldStatus, status) {
+        return new this({id: id, status: oldStatus}).save({status: status});
+    },
+
+    STATUS_NEW: 0,
+    STATUS_REMINDED: 1,
+    STATUS_ALERTED: 2,
+    STATUS_CONVERTED: 3,
+    STATUS_ARCHIVED: 4
+
 });
 
 module.exports = LoanProcess;

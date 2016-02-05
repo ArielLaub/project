@@ -6,11 +6,11 @@ var Config = require('../config');
 var Errors = require('../errors');
 
 var utils  = require('../utils');
-var logger = utils.logger.create('services.analytics_service');
+var logger = utils.logger.create('services.tracking_service');
 
 class IdentityService extends MessageService {
     constructor(connection) {
-        super(connection, 'Analytics.Service');
+        super(connection, 'Tracking.Service');
     }
     
     getConvertedAccounts(request) {
@@ -61,4 +61,4 @@ class IdentityService extends MessageService {
     }
 }
 
-module.exports = AnalyticsService;
+module.exports = TrackingService;

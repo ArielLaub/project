@@ -6,8 +6,9 @@ var utils  = require('../utils');
 var logger = utils.logger.create('model.account');
 var Errors = require('../errors');
 
+const TABLE_NAME = 'users';
 var Account = bookshelf.Model.extend({
-    tableName: 'users',
+    tableName: TABLE_NAME,
 
     constructor: function() {
         bookshelf.Model.apply(this, arguments);
@@ -50,6 +51,7 @@ var Account = bookshelf.Model.extend({
     }
 }, 
 {
+    tableName: TABLE_NAME,
     create: function(email, password, profile) {
         return new Promise(resolve => {
             if (!email || !password) throw new Errors.WrongEmailOrPassword();

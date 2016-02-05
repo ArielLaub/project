@@ -7,23 +7,13 @@ var expect = chai.expect;
 var bookshelf = require('../../model/bookshelf');
 var Account = require('../../model/account');
 var Errors = require('../../errors');
+var seed = require('../mocks/seed');
 
 describe('Account Model', () => {
     before(done => {
-        bookshelf.knex.schema.dropTableIfExists('users').then(() => {
-            return bookshelf.knex.schema.createTable('users', function (table) {
-                table.increments();
-                table.timestamps();
-                table.string('email', 100).unique().index().notNullable();
-                table.string('first_name', 60);
-                table.string('last_name', 60);
-                table.string('password', 100).notNullable();
-                table.boolean('email_verified').defaultTo(false).notNullable();
-                table.string('email_verification_token', 100);
-                table.string('reset_password_token', 100);
-                table.timestamp('reset_password_expires_at');
-            });
-        }).then(() => { done(); }).catch(done);
+        seed.resetAccounts().then(() => {
+            done();
+        }).catch(done);
     });
     
     it('should create an account', done => {
