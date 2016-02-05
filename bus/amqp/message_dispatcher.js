@@ -17,6 +17,8 @@ class MessageDispatcher {
         this.callbackListener = new CallbackListener(connection);
     }
     
+    get isConnected() { return this.connection.isConnected };
+    
     _onResult(content, id) {
         return new Promise((resolve, reject) => {
             //if there is a waiting promise resolve/reject it

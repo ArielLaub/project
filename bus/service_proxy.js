@@ -13,14 +13,22 @@ class ServiceProxy {
     constructor(connection, serviceName) {
         //ensure we do not initiate more than one instance per type
         //we should instead reuse identical instances so we use a cache
-        //if (_cacheByName.has(serviceName)) 
-        //    return _cacheByName.get(serviceName);
+        if (_cacheByName.has(serviceName)) {
+            var serviceProxy = _cacheByName.get(serviceName);
+            //in case the cached instance is not connected create a new one
+            if (serviceProxy.isConnected)
+                return serviceProxy;
+            else
+                _cacheByName.delete(serviceName);
+        } 
             
         this.dispatcher = new MessageDispatcher(connection);
         this.serviceName = serviceName;
         _cacheByName.set(serviceName, this);
     }
     
+    get isConnected() { return this.dispatcher.isConnected };
+
     init() {
         //if we return a cached proxy it will most likely already initialized
         return new Promise((resolve, reject) => {

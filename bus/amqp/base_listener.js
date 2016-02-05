@@ -40,6 +40,8 @@ class BaseListener extends EventEmitter { //abstract
         });         
     }
     
+    get isConnected() { return this.connection.isConnected };
+
     init(messageHandler, queueName) {
         return new Promise(resolve => {
             if (this.channel) return;
