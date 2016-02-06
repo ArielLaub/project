@@ -70,17 +70,17 @@ var Account = bookshelf.Model.extend({
     authenticate: function(email, password) {
         return new Promise(resolve => {
             if (!email || !password) 
-                throw new Errors.WrongEmailOrPassword();
+                return Promise.reject(new Errors.WrongEmailOrPassword());
             resolve();
         }).then(() => {
             return new this({email: email.toLowerCase().trim()}).fetch({require: true});    
         }).catch(err => {
             if (err.message !== 'EmptyResponse')
-                logger.error(err.stack);
-            throw new Errors.WrongEmailOrPassword();
+                logger.error(err);
+            return Promise.reject(new Errors.WrongEmailOrPassword());
         }).then(account => {
             return bcrypt.compareAsync(password, account.get('password')).then(res => {
-                if (!res) throw new Errors.WrongEmailOrPassword();
+                if (!res) return Promise.reject(new Errors.WrongEmailOrPassword());
                 
                 return account.toJSON();
             });
@@ -105,7 +105,7 @@ var Account = bookshelf.Model.extend({
         return new this({email: email.toLowerCase().trim()}).fetch({require: true})
             .catch(err => {
                 if (err.message !== 'EmptyResponse')
-                    logger.error(err.stack);
+                    logger.error(err);
                 throw new Errors.WrongEmailOrPassword();
             })
             .then(account => {
@@ -127,7 +127,7 @@ var Account = bookshelf.Model.extend({
         return new this({email: email.toLowerCase().trim()}).fetch({require: true})
             .catch(err => {
                 if (err.message !== 'EmptyResponse')
-                    logger.error(err.stack);
+                    logger.error(err);
                 throw new Errors.WrongEmailOrPassword();
             })
             .then(account => {

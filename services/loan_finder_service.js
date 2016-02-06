@@ -62,10 +62,11 @@ class LoadFinderService extends MessageService {
         }).then(() => {
             return LoanProcess.getLastByAccountId(request.account_id);
         }).then(process => {
+            if (!process) return {};
             return {
                 form_fields: process.form_fields,
-                results: process.results,
-                status: process.status
+                results: process.results
+                //status: process ? process.status : -1
             }
         });
     }

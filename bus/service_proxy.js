@@ -1,4 +1,5 @@
 'use strict'
+
 var ProtoBuf = require('protobufjs');
 var MessageDispatcher = require('./amqp/message_dispatcher');
 var factory = require('./message_factory').singleton;
@@ -13,21 +14,21 @@ class ServiceProxy {
     constructor(connection, serviceName) {
         //ensure we do not initiate more than one instance per type
         //we should instead reuse identical instances so we use a cache
-        if (_cacheByName.has(serviceName)) {
+        /*if (_cacheByName.has(serviceName)) {
             var serviceProxy = _cacheByName.get(serviceName);
             //in case the cached instance is not connected create a new one
             if (serviceProxy.isConnected)
                 return serviceProxy;
             else
                 _cacheByName.delete(serviceName);
-        } 
+        }*/ 
             
         this.dispatcher = new MessageDispatcher(connection);
         this.serviceName = serviceName;
-        _cacheByName.set(serviceName, this);
+        //_cacheByName.set(serviceName, this);
     }
     
-    get isConnected() { return this.dispatcher.isConnected };
+    //get isConnected() { return this.dispatcher.isConnected };
 
     init() {
         //if we return a cached proxy it will most likely already initialized
@@ -67,8 +68,9 @@ class ServiceProxy {
                             }
                             if (response.error)
                                 throw new GeneralError(response.error.message, response.error.code);
-                            
-                            return response.result.message;
+                            return response.result.message.encodeJSON ? 
+                                        JSON.parse(response.result.message.encodeJSON()) :
+                                        response.result.message;
                         });                            
                 };
             });
@@ -77,14 +79,7 @@ class ServiceProxy {
             return this.dispatcher.init();
         }).then(() => {
             this.initialized = true;
-        }).catch(error => {
-            if (error instanceof Errors.AlreadyInitialized)
-                return;
-                
-            throw error;
         });
-        
-
     }
 }
 

@@ -11,7 +11,7 @@ class MessageListener extends BaseListener {
         this.exchangeName = Defs.BUS_EXCHANGE_NAME;
         this.exchangeType = Defs.BUS_EXCHANGE_TYPE;
     }
-        
+    
     subscribe(topics) {
         if (typeof topics === 'string')
             topics = [topics];

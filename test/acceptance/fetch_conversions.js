@@ -16,11 +16,10 @@ var expect = chai.expect;
 describe('Fetch Conversions', function() {
     var service;
     var client;
-    var connection, clientConnection;
+    var connection;
     
     before(done => {
         connection = new Connection();
-        clientConnection = new Connection();
 
         connection.connectUrl()
             .then(() => {
@@ -28,10 +27,7 @@ describe('Fetch Conversions', function() {
                 return service.init();
             })
             .then(() => {
-                return clientConnection.connectUrl();
-            })
-            .then(() => {
-                client = new ServiceProxy(clientConnection, 'Tracking.Service');
+                client = new ServiceProxy(connection, 'Tracking.Service');
                 return client.init();
             })
             .then(() => {

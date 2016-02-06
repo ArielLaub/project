@@ -10,7 +10,7 @@ message Profile {
     string company = 3;
     string company_number = 4;
     string postal_code = 5;
-    string phone_number = 6;
+    string phone = 6;
 }
 
 message CreateRequest {

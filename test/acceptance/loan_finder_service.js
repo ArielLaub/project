@@ -24,9 +24,6 @@ describe('Loan Finder Service', () => {
                 return service.init();
             })
             .then(() => {
-                return connection.connectUrl();
-            })
-            .then(() => {
                 client = new ServiceProxy(connection, 'LoanFinder.Service');
                 return client.init();
             })

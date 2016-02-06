@@ -1,55 +1,70 @@
 'use strict'
 
-var express     = require('express');
-var bodyParser  = require('body-parser');
+var Promise = require('bluebird');
+var express = require('express');
+var bodyParser = require('body-parser');
 var Connection = require('./bus/amqp/connection');
-var Config = require('./config'); // get our config file
+var Config = require('./config');
 var utils = require('./utils');
 var logger = utils.logger.create('api.server');
 
-var app         = express();
+
+function createApp() {
+    var app         = express();
     
-var port = process.env.PORT || 3000;
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json());
 
-// use body parser so we can get info from POST and/or URL parameters
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+    app.use(require('express-bunyan-logger')({
+        name: 'web-logger', 
+        excludes: ['req', 'res', 'body', 'req-headers', 'res-headers', 'user-agent', 'response-hrtime'],
+        parseUA: false,
+        streams: [{
+            level: 'info',
+            stream: process.stdout
+            }]
+    }));
+    //app.use(require('express-bunyan-logger').errorLogger());
 
-// use morgan to log requests to the console
-app.use(require('express-bunyan-logger')({
-    name: 'web-logger', 
-    excludes: ['req', 'res', 'body', 'req-headers', 'res-headers', 'user-agent', 'response-hrtime'],
-    parseUA: false,
-    streams: [{
-        level: 'info',
-        stream: process.stdout
-        }]
-}));
-//app.use(require('express-bunyan-logger').errorLogger());
+    app.use(function(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
+        next();
+    });
 
-app.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
-    next();
-});
+    // root route
+    app.get('/', function(req, res) {
+        res.send('Hello! The API is at http://localhost:' + port + '/api');
+    });
 
-// basic route
-app.get('/', function(req, res) {
-    res.send('Hello! The API is at http://localhost:' + port + '/api');
-});
+    var router = express.Router();
+    app.use('/api', router);
 
-var router = express.Router();
-app.use('/api', router);
+    //api routes are added async because their initializing depends on a bus connection.
+    var connection = new Connection();
+    connection.on('connected', () => {
+        logger.info('API bus connection established');
+    });
+    connection.on('disconnected', () => {
+        logger.warn('API bus connection lost');
+    });
+    return connection.connectUrl().then(() => {
+        return require('./api/controllers/accounts').init(router, connection);
+    }).then(() => {
+        return app;
+    });
+    
+}
 
-// API ROUTES -------------------
-// we'll get to these in a second
-var connection = new Connection();
-connection.connectUrl().then(() => {
-    return require('./api/controllers/accounts').init(router, connection);
-}).then(() => {
-    app.listen(port);
-    logger.info('API is served at http://localhost:' + port);
-});
-
+//expose app if file is required by a different module (used for api tests)
+if (require.main === module) {
+    createApp(app => {
+        const port = process.env.PORT || 3000;
+        app.listen(port);
+        logger.info('API is served at http://localhost:' + port);
+    });
+} else {
+    module.exports.createApp = createApp;    
+}
 

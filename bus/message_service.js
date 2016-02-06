@@ -30,8 +30,8 @@ class MessageService {
                     return factory.buildResponse(request.method, result).encode().toBuffer();
                 })
                 .catch(error => {
-                    if (error instanceof Error)
-                        logger.error(error.stack);
+                    if (!(error instanceof GeneralError))
+                        logger.error(error);
                     return factory.buildResponse(request.method, error).encode().toBuffer();                
                 });
             else {

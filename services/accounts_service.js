@@ -43,27 +43,40 @@ class AccountsService extends MessageService {
     
     create(request) {
         var account = new Account();
-        return account.save({email: request.email, password: request.password})
-            .tap(account => {
-                return this.notifications.sendWelcomeEmail({account_id: account.id});                
-            }).then(newAccount => {
-                account = newAccount;
-                return this._sign({id: account.id});
-            }).then(token => {
-                let result = {
-                    id: account.id,
-                    email_verification_token:  account.get('email_verification_token'),
-                    access_token: token
+        return new Promise(resolve => {
+            var params = {email: request.email, password: request.password};
+            Object.assign(params, request.profile);
+            resolve(params);           
+        }).then(params => {
+            return account.save(params) 
+        }).tap(account => {
+            return this.notifications.sendWelcomeEmail({account_id: account.id});                
+        }).then(newAccount => {
+            account = newAccount;
+            return this._sign({id: account.id});
+        }).then(token => {
+            let result = {
+                id: account.id,
+                access_token: token,
+                email_verification_token:  account.get('email_verification_token'),
+                profile: {
+                    first_name: account.get('first_name'),
+                    last_name: account.get('last_name'),
+                    company: account.get('company'),
+                    company_number: account.get('company_number'),
+                    phone: account.get('phone'),
+                    postal_code: account.get('postal_code'),
                 }
-                return result;
-            }).catch(error => {
-                if (error.code === 'ER_DUP_ENTRY') {
-                    return new Errors.EmailAlreadyExists();
-                } else {
-                    logger.error(`unrecognized error while creating account - ${error.message}`);
-                    throw new Errors.InternalError();
-                }
-            });
+            }
+            return result;
+        }).catch(error => {
+            if (error.code === 'ER_DUP_ENTRY') {
+                return new Errors.EmailAlreadyExists();
+            } else {
+                logger.error(`unrecognized error while creating account - ${error.message}`);
+                throw new Errors.InternalError();
+            }
+        });
     }
     
     authenticate(request) {
@@ -73,13 +86,12 @@ class AccountsService extends MessageService {
                     access_token: token,
                     id: account.id,
                     profile: {
-                        first_name: accountget('first_name'),
-                        last_name: account.get('last_name'),
-                        company: account.get('company'),
-                        company_number: account.get('company_number'),
-                        phone: account.get('phone'),
-                        postal_code: account.get('postal_code'),
-                        
+                        first_name: account.first_name,
+                        last_name: account.last_name,
+                        company: account.company,
+                        company_number: account.company_number,
+                        phone: account.phone,
+                        postal_code: account.postal_code,
                     }
                 }
             });
@@ -103,7 +115,10 @@ class AccountsService extends MessageService {
     }
     
     setPassword(request) {
-        return Account.setPassword(request.email, request.oldPasswordOrToken, request.newPassword);
+        return Account.setPassword(request.email, request.old_password_or_token, request.new_password)
+            .then(account => {
+                return {message: 'OK'};
+            });
     }
     
     verifyEmail(request) {

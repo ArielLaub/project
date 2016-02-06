@@ -24,13 +24,14 @@ class Connection extends EventEmitter {
     get isConnected() { return this._connected };
     
     connect(protocol, hostName, port, vhost, username, password) {
+        if (this._connected) throw new Errors.AlreadyInitialized();
         if (!protocol) protocol = 'amqp:';
         if (!hostName) hostName = 'localhost';
         if (!port) port = protocol === 'amqp:' ? 5672 : 5671;
         if (!vhost) vhost = '/';
         if (!username) username = 'guest';
         if (!password) password = 'guest';
-
+                
         logger.info(`connecting to bus on ${protocol}//${username}:${password}@${hostName}:${port}${vhost}`);
 
         var sock, lib;
@@ -76,14 +77,14 @@ class Connection extends EventEmitter {
     }
 
     disconnect() {
-        return new Promise((resolve, reject) => {
-            let handle = this._handle;
-            handle.on('error', (error) => {
-            });
-            handle.closeAMQPCommunication();
+        let handle = this._handle;
+        handle.on('error', (error) => { 
+            logger.error(`ingnoring error while disconnecting - ${error.message}`);
+        });
+        return Promise.promisify(handle.closeAMQPCommunication).bind(handle)().then(() => {
+            handle.socket.destroy();
             this._connected = false;
             this.emit('disconnected', {});
-            resolve();
         });
     }
     

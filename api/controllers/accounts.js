@@ -21,19 +21,20 @@ function init(router, connection) {
     var routes = express.Router(); 
 
     routes.post('/authenticate', function(req, res) {
-        accountsService.authenticate({
+        return accountsService.authenticate({
             email: req.body.email,
             password: req.body.password
         }).then(result => {
-            loanFinderService.getAccountLastApplication({account_id: result.id}).then(result => {
-                if (result) {
-                    Object.apply(result, result.form_fields);
-                }
+            return loanFinderService.getAccountLastApplication({account_id: result.id}).then(application => {
+                if (application)
+                    Object.assign(result, application.form_fields);
+                
                 res.set('Authorization', `Bearer ${result.token}`);
+                //logger.error(require('util').inspect(result));
                 res.status(200).json({ success: true, result: result });
             });
         }).catch(error => {
-            logger.info(`failed attempt to fetch me for ${req.accountId}`);
+            logger.info(`failed to authenticate ${JSON.stringify(req.body)} - ${error.message}`);
             res.status(401).json({ success: false, error: 'access_denied'});
         });
     });
@@ -88,10 +89,18 @@ function init(router, connection) {
         accountsService.create({
             email: req.body.email,
             password: req.body.password,
-            profile: req.body.profile
+            profile: {
+                first_name: req.body.profile.first_name,
+                last_name: req.body.profile.last_name,
+                company: req.body.profile.company,
+                company_number: req.body.profile.company_number,
+                phone: req.body.profile.phone,
+                postal_code: req.body.profile.postal_code,
+            }
         }).then(result => {
             res.status(200).json({success: true, result: result});
         }).catch(error => {
+            throw error;
             res.status(401).json({success: false, error: error.message, code: error.code});
         });
     });
