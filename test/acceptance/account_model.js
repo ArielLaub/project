@@ -19,7 +19,7 @@ describe('Account Model', () => {
     });
     
     it('should create an account', done => {
-        Account.create('ariel.laub@gmail.com', 'cookielida', {first_name: 'Ariel', last_name: 'Laub'})
+        Account.create({email:'ariel.laub@gmail.com', password:'cookielida', first_name: 'Ariel', last_name: 'Laub'})
             .then(account => {
                 expect(account).to.have.property('email', 'ariel.laub@gmail.com');
                 expect(bcrypt.compareSync('cookielida', account.password)).to.be.true;

@@ -197,9 +197,11 @@ class Connection extends EventEmitter {
                         let correlationId = properties['correlation-id'];
 
                         logger.info(`incoming message: ${JSON.stringify(data)}`);                     
+                        //for now we early ack everythig to eliminate any deadlocks.
+                        if (!noAck)
+                            handle.basic.ack(channel, data['delivery-tag']);
+                            
                         messageHandler(content, correlationId).timeout(Defs.MESSAGE_PROCESSING_TIME_LIMIT).then((result) => {                            
-                            if (!noAck)
-                                handle.basic.ack(channel, data['delivery-tag']);
                             
                             if (replyTo) {
                                 let p = {

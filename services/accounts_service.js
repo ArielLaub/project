@@ -42,31 +42,34 @@ class AccountsService extends MessageService {
     }
     
     create(request) {
-        var account = new Account();
-        return new Promise(resolve => {
-            var params = {email: request.email, password: request.password};
-            Object.assign(params, request.profile);
-            resolve(params);           
-        }).then(params => {
-            return account.save(params) 
-        }).tap(account => {
-            return this.notifications.sendWelcomeEmail({account_id: account.id});                
-        }).then(newAccount => {
+        var account = {
+            email: request.email,
+            password: request.password,
+            first_name: request.first_name,
+            last_name: request.last_name,
+            company: request.company,
+            company_number: request.company_number,
+            phone: request.phone,
+            postal_code: request.postal_code,
+            reffid: request.referrer_id, //TODO: FIX THIS SILLY TYPO IN DB FIELD NAME!!!
+            affid: request.affiliate_id
+        };
+        return Account.create(account).then(newAccount => {
             account = newAccount;
+            return this.notifications.sendWelcomeEmail({account_id: account.id});                
+        }).then(() => {
             return this._sign({id: account.id});
         }).then(token => {
             let result = {
-                id: account.id,
                 access_token: token,
-                email_verification_token:  account.get('email_verification_token'),
-                profile: {
-                    first_name: account.get('first_name'),
-                    last_name: account.get('last_name'),
-                    company: account.get('company'),
-                    company_number: account.get('company_number'),
-                    phone: account.get('phone'),
-                    postal_code: account.get('postal_code'),
-                }
+                id: account.id,
+                first_name: account.first_name,
+                last_name: account.last_name,
+                company: account.company,
+                company_number: account.company_number,
+                phone: account.phone,
+                postal_code: account.postal_code,
+                email_verification_token:  account.email_verification_token,
             }
             return result;
         }).catch(error => {
@@ -85,14 +88,13 @@ class AccountsService extends MessageService {
                 return {
                     access_token: token,
                     id: account.id,
-                    profile: {
-                        first_name: account.first_name,
-                        last_name: account.last_name,
-                        company: account.company,
-                        company_number: account.company_number,
-                        phone: account.phone,
-                        postal_code: account.postal_code,
-                    }
+                    first_name: account.first_name,
+                    last_name: account.last_name,
+                    company: account.company,
+                    company_number: account.company_number,
+                    phone: account.phone,
+                    postal_code: account.postal_code,
+                    email_verification_token:  account.email_verification_token,
                 }
             });
         });
@@ -126,7 +128,19 @@ class AccountsService extends MessageService {
     }
     
     getAccountById(request) {
-        return Account.getAccountById(request.account_id);
+        return Account.getAccountById(request.account_id).then(account => {
+            return {
+                id: account.id, 
+                email: account.email, 
+                first_name: account.first_name,
+                last_name: account.last_name,
+                company: account.company,
+                company_number: account.company_number,
+                phone: account.phone,
+                postal_code: account.postal_code,
+                email_verification_token:  account.email_verification_token,
+            }
+        });
     }
 }
 

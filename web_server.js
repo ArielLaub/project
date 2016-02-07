@@ -12,7 +12,7 @@ var logger = utils.logger.create('api.server');
 function createApp() {
     var app         = express();
     
-    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(express.static(__dirname + '/public'));
     app.use(bodyParser.json());
 
     app.use(require('express-bunyan-logger')({
@@ -59,7 +59,7 @@ function createApp() {
 
 //expose app if file is required by a different module (used for api tests)
 if (require.main === module) {
-    createApp(app => {
+    createApp().then(app => {
         const port = process.env.PORT || 3000;
         app.listen(port);
         logger.info('API is served at http://localhost:' + port);

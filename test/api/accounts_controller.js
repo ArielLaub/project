@@ -3,7 +3,7 @@
 var Promise = require('bluebird');
 var chai = require('chai');
 var supertest = require('supertest');
-var apiServer = require('../../api_server');
+var webServer = require('../../web_server');
 var AccountsService = require('../../services/accounts_service');
 var MockNotificationsService = require('../mocks/mock_notifications_service');
 var LoanFinderService = require('../../services/loan_finder_service');
@@ -30,7 +30,7 @@ describe('Accounts Controller tests', function() {
         }).then(() => {
            return seed.resetAccounts(); 
         }).then(() => {
-            return apiServer.createApp();
+            return webServer.createApp();
         }).then(app => {
             request = supertest(app);
             done();
@@ -41,14 +41,12 @@ describe('Accounts Controller tests', function() {
         var account = {
             email: 'naomi.laub@gmail.com',
             password: '123456',
-            profile: {
-                first_name: 'Naomi',
-                last_name: 'Laub',
-                company: 'Noodnik Inc',
-                company_number: '654321',
-                phone: '144',
-                postal_code: '333'
-            }
+            first_name: 'Naomi',
+            last_name: 'Laub',
+            company: 'Noodnik Inc',
+            company_number: '654321',
+            phone: '144',
+            postal_code: '333'
         };
         
         request
@@ -64,13 +62,12 @@ describe('Accounts Controller tests', function() {
                 var account = response.body.result;
                 expect(account).to.have.property('id');
                 expect(account).to.have.property('access_token');
-                expect(account).to.have.property('profile');
-                expect(account.profile).to.have.property('first_name', 'Naomi')
-                expect(account.profile).to.have.property('last_name', 'Laub')
-                expect(account.profile).to.have.property('company', 'Noodnik Inc')
-                expect(account.profile).to.have.property('company_number', '654321')
-                expect(account.profile).to.have.property('phone', '144')
-                expect(account.profile).to.have.property('postal_code', '333')
+                expect(account).to.have.property('first_name', 'Naomi')
+                expect(account).to.have.property('last_name', 'Laub')
+                expect(account).to.have.property('company', 'Noodnik Inc')
+                expect(account).to.have.property('company_number', '654321')
+                expect(account).to.have.property('phone', '144')
+                expect(account).to.have.property('postal_code', '333')
                 done();
             });
     });

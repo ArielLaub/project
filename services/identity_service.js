@@ -6,59 +6,44 @@ var Config = require('../config');
 var Errors = require('../errors');
 
 var utils  = require('../utils');
-var logger = utils.logger.create('services.tracking_service');
+var logger = utils.logger.create('services.identity_service');
+var companiesHouse = require('./identity/companies_house');
 
 class IdentityService extends MessageService {
     constructor(connection) {
-        super(connection, 'Tracking.Service');
+        super(connection, 'Identity.Service');
     }
     
-    getConvertedAccounts(request) {
-        var limit = request.limit || 100;
-        var fields = [`Stat.${ACCOUNT_ID_FIELD_NAME}`];
-        var filters = {};
-        filters[`Stat.${ACCOUNT_ID_FIELD_NAME}`] = {conditional: 'GREATER_THAN', values: 0} 
-                   
-        if (request.from && request.to) {
-            filters['Stat.datetime'] = {
-                conditional: 'BETWEEN', values: [dateString(request.from), dateString(request.to)]
-            }
-        } else if (request.from) {
-            filters['Stat.datetime'] = {
-                conditional: 'GREATER_THAN', values: dateString(request.from)
-            }
-        } else if (request.to) {
-            filters['Stat.datetime'] = {
-                conditional: 'LESS_THAN', values: dateString(request.to)
-            }            
-        }
-        
-        if (request.affiliate_id) {
-            filters['Stat.affiliate_id'] = {
-                conditional: 'EQUAL_TO', values: request.affiliate_id
-            }
-        }
-        
-        if (request.account_ids && request.account_ids.length > 0) {
-            filters[`Stat.${ACCOUNT_ID_FIELD_NAME}`] = {
-                conditional: 'EQUALS_TO', values: request.account_ids
-            }
-        }
-        
-        return hasOffers.report.getConversions({fields, filters, limit}).then(response => {
-            let result = [];
-            if (response.data && response.data.data) {
-                response.data.data.forEach(value => {
-                    try {
-                        result.push(parseInt(value.Stat.affiliate_info4));
-                    } catch (error) {
-                        logger.error(`fetched invalid account id from hasOffers ${value}`);
-                    }
-                });
-            }
-            return result;
-        });
+    validateCompany(request) {
+        return new Promise((resolve, reject) => {
+            if (!request.company_number) return reject(new Errors.CompanyNumberRequired());
+            if (!request.company_name) return reject(new Errors.CompanyNameRequired());
+
+            return companiesHouse.getCompanyProfile(request.company_number).then(response => {
+                if (response.errors)
+                    return {valid: false, error: response.errors[0].error};
+                
+                var name = response.company_name.toLowerCase();
+                var status = response.company_status;
+                //var createdAt = response.date_of_creation;
+                //TODO add validation for creation date.   
+                             
+                var userWords = request.company_name.toLowerCase().split(' ');
+                if (userWords.length > 0)
+                    userWords.forEach(word => {
+                        if (name.indexOf(word) === -1)
+                            resolve({valid: false, error: 'name does not match'});
+                    });
+                    
+                if (status !== 'active')
+                    resolve({valid: false, error: 'invalid company status'});
+                    
+                resolve({valid: true});
+            }).catch(error => {
+                resolve({valid: false, error: 'invalid company number'});
+            });
+        })
     }
 }
 
-module.exports = TrackingService;
+module.exports = IdentityService;

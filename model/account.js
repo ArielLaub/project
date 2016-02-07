@@ -52,13 +52,14 @@ var Account = bookshelf.Model.extend({
 }, 
 {
     tableName: TABLE_NAME,
-    create: function(email, password, profile) {
+    create: function(fields) {
+        var email = fields.email;
+        var password = fields.password;
         return new Promise(resolve => {
             if (!email || !password) throw new Errors.WrongEmailOrPassword();
-            resolve(new Account());        
-        }).then((newAccount) => {
-            //for now we just flatten the profile fields to the account itself.
-            return newAccount.save(Object.assign({email: email, password: password}, profile || {}));            
+            resolve();        
+        }).then(() => {
+            return (new Account()).save(fields);            
         }).then(account => {
             return account.toJSON();
         }).catch(error => {
@@ -142,7 +143,9 @@ var Account = bookshelf.Model.extend({
     },
     
     getAccountById: function(id) {
-        return new this({id: id}).fetch({require: true});
+        return new this({id: id}).fetch({require: true}).then(account => {
+            return account.toJSON();
+        });
     }
 })
 

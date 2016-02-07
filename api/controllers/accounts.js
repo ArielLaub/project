@@ -86,23 +86,31 @@ function init(router, connection) {
     });
     
     routes.post('/create', function(req, res) {
-        accountsService.create({
+        var params = {
             email: req.body.email,
             password: req.body.password,
-            profile: {
-                first_name: req.body.profile.first_name,
-                last_name: req.body.profile.last_name,
-                company: req.body.profile.company,
-                company_number: req.body.profile.company_number,
-                phone: req.body.profile.phone,
-                postal_code: req.body.profile.postal_code,
-            }
-        }).then(result => {
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            company: req.body.company,
+            company_number: req.body.company_number,
+            phone: req.body.phone,
+            postal_code: req.body.postal_code,
+        };
+        
+        accountsService.create(params).then(result => {
             res.status(200).json({success: true, result: result});
         }).catch(error => {
             throw error;
             res.status(401).json({success: false, error: error.message, code: error.code});
         });
+    });
+    
+    routes.post('/refreshToken', authenticate, function(req, res) {
+        res.status(200).json({success: true});
+    })
+    
+    routes.post('/logout', function(req, res) {
+        res.status(200).json({success: true});
     });
     
     return Promise.all([

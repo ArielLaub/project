@@ -30,3 +30,6 @@ module.exports.AccountIdRequired              = E(code++, 'account id required')
 module.exports.LenderIdRequired               = E(code++, 'lender id required');
 module.exports.AnswersRequired                = E(code++, 'answers required');
 module.exports.ProcessIdRequired              = E(code++, 'process id required');
+module.exports.CompanyNameRequired            = E(code++, 'company name required');
+module.exports.CompanyNumberRequired          = E(code++, 'company number required');
+

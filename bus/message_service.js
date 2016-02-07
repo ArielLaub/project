@@ -21,7 +21,7 @@ class MessageService {
         return new Promise((resolve, reject) => {
             var request = factory.decodeRequest(data);
             if (!request) 
-                throw new Errors.InvalidRequest();
+                reject(new Errors.InvalidRequest());
             resolve(request);
         }).then(request => {
             var method = request.method.split('.')[2]; //<package>.<service>.<method>

@@ -101,7 +101,7 @@ class MessageFactory {
         var TMethod = this.builder.lookup(request.method);
 
         var messageType = TMethod.requestName; 
-        request.message = this.decodeMessage(messageType, request.data);
+        request.message = JSON.parse(this.decodeMessage(messageType, request.data).encodeJSON());
         return request;
     }
         
@@ -148,7 +148,7 @@ class MessageFactory {
             let TMethod = this.builder.lookup(result.method);
             let messageType = TMethod.responseName; 
 
-            result.message = this.decodeMessage(messageType, result.data);
+            result.message = JSON.parse(this.decodeMessage(messageType, result.data).encodeJSON());
         }
         return response;
     }

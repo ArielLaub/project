@@ -1,0 +1,131 @@
+<div class="results">
+
+  <div class="intro text-center">
+    Congratulations <b>{{ vm.authModel.name }}</b>, <br/>
+    we've found these funding options <br/>
+    for your business
+  </div>
+
+  <div class="container">
+
+    <div class="results-company" data-ng-repeat="opt in vm.resultModel">
+
+      <div class="box-wrapper">
+        <div class="col-xs-4 box">
+          <div><img src="app/public-assets/img/{{opt.logo}}"/></div>
+        </div>
+
+        <div class="col-xs-4 box">
+          <div>
+            <div>{{ opt.funds_received }}</div>
+            <div>Funds received</div>
+          </div>
+        </div>
+
+        <div class="col-xs-4 box">
+          <div>
+            {{ opt.loan_type }}
+          </div>
+        </div>
+      </div>
+
+      <div class="box-wrapper">
+
+        <div class="col-xs-4 box">
+          <div>
+            <div>
+              <span>{{ opt.trustpilot_rate }}</span>
+              <span ng-if="opt.trustpilot_rates">({{ opt.trustpilot_rates }} rated)</span>
+            </div>
+            <span>{{ opt.trustpilot_stars }}</span>
+          </div>
+        </div>
+
+        <div class="col-xs-4 box">
+          <div>
+            <div>{{ opt.cost_rate }}</div>
+            <div>{{ opt.cost_period }}</div>
+          </div>
+        </div>
+
+        <div class="col-xs-4 box" data-ng-click="$parent.selected = opt.company_id">
+          <div>
+            More Info > {{ opt.companyId }}
+          </div>
+        </div>
+      </div>
+
+      <div class="more-info" data-ng-show="$parent.selected == opt.company_id">
+
+
+        <ui-state id='activeTab' default='1'></ui-state>
+
+        <ul class="nav nav-tabs">
+          <li ui-class="{'active': activeTab == 1}">
+            <a ui-set="{'activeTab': 1}">Terms</a>
+          </li>
+          <li ui-class="{'active': activeTab == 2}">
+            <a ui-set="{'activeTab': 2}">Lender</a>
+          </li>
+          <li ui-class="{'active': activeTab == 3}">
+            <a ui-set="{'activeTab': 3}">Loan Type</a>
+          </li>
+        </ul>
+
+        <div ui-if="activeTab == 1" class="terms tab-content">
+
+          <div class="block">
+            <div class="title">Amount:</div>
+            <div class="value">{{ opt.amount }}</div>
+          </div>
+
+          <div class="block">
+            <div class="title">Terms:</div>
+            <div class="value">{{ opt.terms }}</div>
+          </div>
+
+          <div class="block">
+            <div class="title">Additional requirements:</div>
+            <ol>
+              <li data-ng-repeat="(key, value) in opt.company_requirements">{{value}}</li>
+            </ol>
+          </div>
+        </div>
+
+        <div ui-if="activeTab == 2" class="lender tab-content">
+          <div data-ng-bind-html="opt.company_description | parseUrl"></div>
+        </div>
+
+        <div ui-if="activeTab == 3" class="loan-type tab-content">
+          <div data-ng-bind-html="opt.loan_type_description | parseUrl"></div>
+          <div class="benefits-drawbacks">
+            <div class="benefits">
+              <h5>Benefits</h5>
+
+              <div>
+                <ol>
+                  <li data-ng-repeat="(key, value) in opt.loan_type_benefits">{{value}}</li>
+                </ol>
+              </div>
+            </div>
+
+            <div class="drawbacks">
+              <h5>Drawbacks</h5>
+
+              <div>
+                <ol>
+                  <li data-ng-repeat="(key, value) in opt.loan_type_benefits">{{value}}</li>
+                </ol>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-success btn-block get-funding-btn"><a href="{{vm.addQueries(opt.url)}}">GET FUNDING</a></button>
+    </div>
+
+  </div>
+
+</div>

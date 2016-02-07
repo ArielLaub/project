@@ -18,6 +18,13 @@ class NotificationsService extends MessageService {
         this.accounts = new ServiceProxy(connection, 'Accounts.Service');
     }
 
+    init() {
+        return super.init()
+            .then(() => {
+                return this.accounts.init();
+            });
+    }
+    
     _getPayloadTemplate(templateName, templateContent, subject, tags, clientName, clientEmail, mergeVars) {
         return {
             key: Config.mandrillApiKey,
@@ -43,7 +50,13 @@ class NotificationsService extends MessageService {
     }    
 
     sendMandrillTemplate(request) {
+        
         return new Promise((resolve, reject) => {
+            var _handleResponse = function(response) {
+                if (response.status === 'error')
+                    return reject(new Error(`${response.message} - code: ${response.code}`));
+                resolve(response);
+            }
             this.mandrillClient.messages.sendTemplate({
                 template_name: request.template_name, 
                 template_content: request.template_content, 
@@ -51,7 +64,7 @@ class NotificationsService extends MessageService {
                 async: !!request.async, 
                 ip_pool: request.ip_pool || 'Main Pool',
                 send_at: request.send_at ? request.send_at : null
-            }, resolve, reject);
+            }, _handleResponse, _handleResponse);
         });
     }
     
@@ -90,7 +103,7 @@ class NotificationsService extends MessageService {
             var payload = this._getPayloadTemplate('welcome-sign-up', null,
                 'Welcome to Fundbird - Helping you find your business loan!', 
                 ['welcome', 'sign-up'], clientName, account.email, mergeVars);
-                
+
             return this.sendMandrillTemplate(payload);
         });
     }
@@ -145,7 +158,7 @@ class NotificationsService extends MessageService {
         }).then(account => {
             var clientName = `${account.last_name} ${account.first_name}`;
             var templateContent = [
-                {name: 'fname', content: clientName},
+                {name: 'fname', content: account.first_name},
                 {name: 'uid', content: account.id}
             ]
 

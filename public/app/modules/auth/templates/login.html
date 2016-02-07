@@ -1,0 +1,66 @@
+<div class="content-wrapper login col-xs-12">
+
+  <div class="intro text-center">
+    LOGIN
+  </div>
+
+  <form name="loginForm"
+        novalidate
+        class="fundbird-form"
+        id="login-form"
+        data-ng-submit="vm.loginFormSubmit(vm.loginModel.email, vm.loginModel.password)">
+
+    <div class="form-group"
+         data-ng-class="{'has-error' : loginForm.email.$invalid && loginForm.email.$dirty, 'has-success' : loginForm.email.$valid && loginForm.email.$dirty}">
+      <label for="email">Email</label>
+      <input type="email"
+             class="line-15 form-control col-xs-12"
+             name="email"
+             id="email"
+             data-ng-model="vm.loginModel.email"
+             required/>
+
+      <p class="help-block" data-ng-show="loginForm.email.$invalid && loginForm.email.$dirty && loginForm.submitted">
+        Enter a valid email
+      </p>
+    </div>
+
+    <div class="form-group"
+         data-ng-class="{'has-error' : loginForm.password.$invalid && loginForm.password.$dirty, 'has-success' : loginForm.password.$valid && loginForm.password.$dirty}">
+      <label for="password">Password</label>
+      <input type="password"
+             class="line-15 form-control col-xs-12"
+             name="password"
+             id="password"
+             data-ng-model="vm.loginModel.password"
+             required/>
+
+      <p class="help-block" data-ng-show="loginForm.password.$invalid && loginForm.password.$dirty && loginForm.submitted">
+        This field is required
+      </p>
+    </div>
+
+    <div class="checkbox-inline remember-me">
+      <input type="checkbox"
+             class="needsclick"
+             id="rememberMe"
+             name="rememberMe"
+             data-ng-model="vm.authModel.rememberMe"/>
+      <label for="rememberMe">Remember me</label>
+    </div>
+
+    <span class="text-right">
+      <a data-ui-sref="root.change-password">Forgot password?</a>
+    </span>
+
+      <div data-ng-show="vm.authModel.loginError" class="">
+          {{ vm.authModel.loginError }}
+      </div>
+
+    <button class="btn btn-warning loan-options-btn btn-block">
+      Login
+    </button>
+
+  </form>
+
+</div>

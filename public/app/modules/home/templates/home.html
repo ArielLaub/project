@@ -1,0 +1,233 @@
+<div class="home">
+
+  <div class="intro text-center">
+    <div class="slogan">
+      Find your small<br/>
+      Business funding
+    </div>
+    <div class="sub-slogan text-center col-xs-10 col-xs-push-1">
+      Matching you with the UK’s top
+      funding providers.<br/>
+      It’s <b>quick</b>, <b>easy</b> and <b>free</b>.
+    </div>
+  </div>
+
+  <div class="section">
+    <form role="form"
+          name="homeForm"
+          id="home-form"
+          class="fundbird-form"
+          novalidate data-ng-submit="vm.homeFormSubmit()">
+
+      <div class="form-group">
+        <label for="loan-amount">Desired loan amount</label>
+        <input type="text"
+               class="form-control needsclick"
+               id="loan-amount"
+               name="1"
+               required
+               data-ng-model="vm.authModel.exact_loan_amount"
+               placeholder="Desired loan amount"/>
+                <span class="help-block"
+                      data-ng-show="homeForm[1].$invalid && homeForm.$submitted">
+                    This field is required
+                </span>
+      </div>
+
+      <div class="form-group styled-select"
+           data-ng-class="{'has-error' : loanOptionsForm.loanPurpose.$invalid && loanOptionsForm.$submitted}">
+        <label for="loan-purpose">Loan purpose</label>
+        <select class="form-control needsclick list-selector"
+                name="loanPurpose"
+                data-ng-class="{'pre-select': !vm.authModel.answer[3]}"
+                id="loan-purpose"
+                required
+                data-ng-options="opt.value as opt.name for opt in vm.fieldOptions.loanPurpose"
+                data-ng-model="vm.authModel.answer[3]">
+        </select>
+        <span class="help-block" data-ng-show="homeForm.loanPurpose.$invalid && homeForm.submitted">This field is required</span>
+      </div>
+
+      <button class="btn btn-warning loan-options-btn btn-block">
+        CHECK YOUR LOAN OPTIONS
+      </button>
+
+    </form>
+  </div>
+
+  <div class="section asseen">
+    <div class="text-center">As seen in:</div>
+    <div class="logos">
+      <img src="app/public-assets/img/asseen.png"/>
+    </div>
+  </div>
+
+  <div class="section steps-instructions text-center">
+    <div class="instruction-wrapper col-xs-12 line-30">
+      <div class="line-15">
+        <img src="app/public-assets/img/icons/form.png"/>
+      </div>
+      <div class="steps-instruction-title line-5">
+        COMPLETE A 2 MIN. FORM
+      </div>
+      <div class="line-15 steps-instruction-description">
+        Tell us about your business so we get to know
+        you and your needs better - it will only take a minute.
+      </div>
+    </div>
+    <div class="instruction-wrapper col-xs-12 line-30">
+      <div class="line-15">
+        <img src="app/public-assets/img/icons/bestsuited.png"/>
+      </div>
+      <div class="steps-instruction-title instruction-title line-5">
+        FIND YOUR BEST SUITED
+        LOAN OPTIONS
+      </div>
+      <div class="line-15 instruction steps-instruction-description">
+        We will match you with the best funding options,
+        who are interested in working with your business.
+      </div>
+    </div>
+    <div class="instruction-wrapper col-xs-12">
+      <div class="line-15">
+        <img src="app/public-assets/img/icons/pig.png"/>
+      </div>
+      <div class="steps-instruction-title instruction-title line-5">
+        GET YOUR FUNDING
+      </div>
+      <div class="line-15 instruction steps-instruction-description">
+        Connect directly with the matched lenders and
+        get the funding you need to grow.
+      </div>
+    </div>
+  </div>
+
+  <div class="section profile text-center">
+    <div class="line-30">
+      <img src="app/public-assets/img/testamonials/2test---150-150.png" />
+    </div>
+    <div class="name">
+      Simon T., <b>Bakery Chain Owner</b>
+    </div>
+    <div class="quote">
+      <i class="fa fa-quote-left"></i>
+      "There is such a variety of funding solutions...
+      using Fundbird helped me find the right option and
+      receive the funding I needed to fulfill my dream."
+      <i class="fa fa-quote-right"></i>
+    </div>
+
+    <a data-ui-sref="root.home-step1">
+      <button class="btn btn-warning loan-options-btn btn-block">
+        CHECK YOUR LOAN OPTIONS>
+      </button>
+    </a>
+  </div>
+
+  <div class="section three-slogans text-center">
+    <div class="three-slogans-wrapper line-15">
+      <div class="three-slogans-title line-5">
+        HASSLE FREE
+      </div>
+      <div class="three-slogans-description line-5">
+        We save the hassle of going
+        to multiple lenders
+      </div>
+    </div>
+    <div class="three-slogans-wrapper line-15">
+      <div class="three-slogans-title line-5">
+        SIMPLE
+      </div>
+      <div class="three-slogans-description line-5">
+        Your personalised, best suited
+        options in just a few minutes
+      </div>
+    </div>
+    <div class="three-slogans-wrapper line-15">
+      <div class="three-slogans-title line-5">
+        SAFE
+      </div>
+      <div class="three-slogans-description line-5">
+        We carefully select our lenders.
+        All lenders are FCA approved
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section partners text-center">
+    <div class="partners-wrapper line-30">
+      <div class="partners-title line-5">
+        Our network of partners include:
+      </div>
+      <div class="partners-logos">
+        <img src="app/public-assets/img/parners.png" />
+      </div>
+    </div>
+  </div>
+
+  <div class="section profile text-center">
+    <div class="line-30">
+      <img src="app/public-assets/img/testamonials/1test---150-150.png" />
+    </div>
+    <div class="name">
+      Karen B., <b>Owner of K. Designs</b>
+    </div>
+    <div class="quote">
+      <i class="fa fa-quote-left"></i>
+      In previous years I had to borrow money from
+      family when faced with cash-flow challenges.
+      This year Fundbird guided me to the
+      right alternative lender for me.
+      <i class="fa fa-quote-right"></i>
+    </div>
+
+    <a data-ui-sref="root.home-step1">
+      <button class="btn btn-warning loan-options-btn btn-block">
+        CHECK YOUR LOAN OPTIONS>
+      </button>
+    </a>
+  </div>
+
+  <div class="section statistics text-center">
+    <div class="statistics-wrapper line-15">
+      <div class="statistics-title line-30">
+        More than <b>15</b> Financial models
+      </div>
+    </div>
+
+    <div class="statistics-wrapper line-15">
+      <div class="statistics-title line-5">
+        Available funding from <b>£1,000</b> to
+        more than <b>£1,000,000</b>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section profile text-center">
+    <div class="line-30">
+      <img src="app/public-assets/img/testamonials/3test---150-150.png" />
+    </div>
+    <div class="description profile-bold">
+      WE'RE HERE FOR YOU
+    </div>
+    <div class="profile-normal">
+      Our dedicated support team is here to
+      help you with any question you may have
+    </div>
+    <div class="profile-bold">
+      LET'S TALK
+    </div>
+    <div class="email">
+      anat@fundbird.co.uk
+    </div>
+
+    <a data-ui-sref="root.home-step1">
+      <button class="btn btn-warning loan-options-btn btn-block">
+        CHECK YOUR LOAN OPTIONS
+      </button>
+    </a>
+  </div>
+
+</div>

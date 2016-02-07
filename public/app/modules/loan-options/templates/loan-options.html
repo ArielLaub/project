@@ -1,0 +1,391 @@
+<div class="loan-options">
+
+<div data-ng-include="'app/modules/common/templates/steps.html'"></div>
+
+<div class="intro text-center">
+  Fill out this 2 min. application<br/>
+  so we could match you with your<br/>
+  <b>best suited loans</b>
+</div>
+
+<div class="section loan-options-form-wrapper">
+<form role="form"
+      name="loanOptionsForm"
+      id="loan-options-form"
+      class="fundbird-form"
+      novalidate
+      data-ng-submit="vm.loanOptionsFormSubmit()">
+
+<div class="loan-options-form-section">
+
+  <!-- Desired loan amount -->
+  <div class="form-group">
+    <label for="loan-amount">Desired loan amount</label>
+    <input type="text"
+           class="form-control needsclick"
+           id="loan-amount"
+           name="1"
+           required
+           data-ng-model="vm.authModel.exact_loan_amount"/>
+                <span class="help-block"
+                      data-ng-show="loanOptionsForm[1].$invalid && loanOptionsForm.$submitted">
+                    This field is required
+                </span>
+  </div>
+
+  <!-- Loan purpose -->
+  <div class="form-group">
+    <label for="loan-purpose">Loan purpose</label>
+    <select class="form-control needsclick list-selector"
+            name="loanPurpose"
+            id="loan-purpose"
+            required
+            data-ng-class="{'pre-select': !vm.authModel.answer[3]}"
+            data-ng-options="opt.value as opt.name for opt in vm.fieldOptions.loanPurpose"
+            data-ng-model="vm.authModel.answer[3]">
+    </select>
+    <span class="help-block" data-ng-show="loanOptionsForm.loanPurpose.$invalid && loanOptionsForm.$submitted">This field is required</span>
+  </div>
+
+  <!-- Business established -->
+  <div class="form-group">
+    <label for="business-state">Business established</label>
+    <select class="form-control needsclick"
+            name="businessState"
+            id="business-state"
+            required
+            data-ng-class="{'pre-select': !vm.authModel.answer[4]}"
+            data-ng-options="opt.value as opt.name for opt in vm.fieldOptions.businessState"
+            data-ng-model="vm.authModel.answer[4]">
+    </select>
+    <span class="help-block" data-ng-show="loanOptionsForm.businessState.$invalid && loanOptionsForm.$submitted">This field is required</span>
+  </div>
+
+  <!-- Industry -->
+  <div class="form-group">
+    <label for="industry">Industry</label>
+    <select class="form-control needsclick"
+            name="industry"
+            id="industry"
+            required
+            data-ng-class="{'pre-select': !vm.authModel.answer[7]}"
+            data-ng-options="opt.value as opt.name for opt in vm.fieldOptions.industry"
+            data-ng-model="vm.authModel.answer[7]">
+    </select>
+    <span class="help-block" data-ng-show="loanOptionsForm.industry.$invalid && loanOptionsForm.$submitted">This field is required</span>
+  </div>
+
+  <!-- AnnualRevenue -->
+  <div class="form-group">
+    <label for="annual-revenue">Annual Revenue</label>
+    <select class="form-control needsclick"
+            name="annualRevenue"
+            id="annual-revenue"
+            required
+            data-ng-class="{'pre-select': !vm.authModel.answer[5]}"
+            data-ng-options="opt.value as opt.name for opt in vm.fieldOptions.annualRevenue"
+            data-ng-model="vm.authModel.answer[5]">
+    </select>
+    <span class="help-block" data-ng-show="loanOptionsForm.annualRevenue.$invalid && loanOptionsForm.$submitted">This field is required</span>
+  </div>
+
+  <!-- Business type -->
+  <div class="business-type form-group" data-ng-show="vm.businessEstablished">
+    <div class="panel-title loan-options-title text-center"><b>Business type</b></div>
+    <label class="btn btn-default col-xs-6"
+           data-ng-repeat="opt in vm.fieldOptions.businessType"
+           data-ng-class="'{{ opt.name | spaceless | lowercase}}'"
+           uib-btn-radio="opt.value"
+           name="businessType"
+           required
+           data-ng-model="vm.authModel.answer[6]">
+      <span>{{ opt.name }}</span>
+    </label>
+    <span class="help-block" data-ng-show="loanOptionsForm.businessType.$invalid && loanOptionsForm.$submitted">This field is required</span>
+  </div>
+
+  <!-- Loan term-->
+  <div data-ng-show="vm.businessEstablished" class="loan-term form-group">
+    <div class="panel-title loan-options-title text-center"><b>Loan term</b></div>
+    <div>
+      <select class="form-control needsclick"
+              name="loanTerm"
+              id="inputError"
+              required
+              data-ng-class="{'pre-select': !vm.authModel.answer[2] || vm.authModel.answer[2] === '13' || vm.authModel.answer[2] === '14'}"
+              data-ng-options="opt.value as opt.name for opt in vm.fieldOptions.loanTerm|filter:opt.exclude === true"
+              data-ng-model="vm.authModel.answer[2]">
+      </select>
+    </div>
+
+    <label class="btn btn-default col-xs-6"
+           data-ng-repeat="opt in vm.fieldOptions.loanTerm"
+           data-ng-hide="!opt.button"
+           name="loanTerm"
+           required
+           uib-btn-radio="opt.value"
+           data-ng-class="'{{ opt.name | spaceless | lowercase}}'"
+           data-ng-model="vm.authModel.answer[2]">
+      <span>{{ opt.name }}</span>
+    </label>
+    <span class="help-block" data-ng-show="loanOptionsForm.loanTerm.$invalid && loanOptionsForm.$submitted">This field is required</span>
+  </div>
+</div>
+
+<div class="loan-options-form-section">
+
+  <!-- Business bank -->
+  <div class="business_bank" data-ng-show="!vm.businessEstablished">
+    <div class="panel-title loan-options-title"
+         data-ng-repeat="opt in vm.fieldOptions.businessBank"
+         data-ng-hide="!opt.title">
+      <b> {{ opt.name }} </b>
+    </div>
+
+    <div class="row">
+      <div class="btn-group col-xs-12">
+        <label class="btn btn-default col-xs-6 form-button same-value"
+               uib-btn-radio="opt.value"
+               data-ng-repeat="opt in vm.fieldOptions.businessBank"
+               data-ng-hide="opt.title"
+               name="businessBank"
+               data-ng-model="vm.authModel.business_bank_account">
+          <span>{{ opt.name }}</span>
+        </label>
+      </div>
+    </div>
+    <span class="help-block" data-ng-show="loanOptionsForm.businessBank.$invalid && loanOptionsForm.$submitted">This field is required</span>
+  </div>
+
+  <!-- Business credit -->
+  <div class="business-credit" data-ng-show="vm.authModel.business_bank_account === '1' && !vm.businessEstablished">
+    <div class="panel-title loan-options-title"
+         data-ng-repeat="opt in vm.fieldOptions.businessCredit"
+         data-ng-hide="!opt.title">
+      <b> {{ opt.name }} </b>
+    </div>
+
+    <div class="row">
+      <div class="btn-group col-xs-12">
+        <label class="btn btn-default col-xs-6 form-button same-value"
+               uib-btn-radio="opt.value"
+               data-ng-repeat="opt in vm.fieldOptions.businessCredit"
+               name="businessCredit"
+               data-ng-hide="opt.title"
+               data-ng-model="vm.authModel.business_credit_card">
+          <span>{{ opt.name }}</span>
+        </label>
+      </div>
+    </div>
+    <span class="help-block" data-ng-show="loanOptionsForm.businessCredit.$invalid && loanOptionsForm.$submitted">This field is required</span>
+  </div>
+
+  <!-- Credit cards -->
+  <div class="credit-cards" data-ng-show="vm.businessEstablished">
+    <div class="panel-title loan-options-title"
+         data-ng-repeat="opt in vm.fieldOptions.creditCards"
+         data-ng-hide="!opt.title">
+      <b> {{ opt.name }} </b>
+    </div>
+
+    <div class="row">
+      <div class="btn-group col-xs-12">
+        <label class="btn btn-default col-xs-6 form-button same-value"
+               uib-btn-radio="opt.value"
+               data-ng-repeat="opt in vm.fieldOptions.creditCards"
+               data-ng-hide="opt.title"
+               name="creditCards"
+               required
+               data-ng-click="vm.updateAnswerModel10()"
+               data-ng-model="vm.authModel.process_card">
+          <span>{{ opt.name }}</span>
+        </label>
+      </div>
+    </div>
+    <span class="help-block" data-ng-show="loanOptionsForm.creditCards.$invalid && loanOptionsForm.$submitted">This field is required</span>
+  </div>
+
+  <!--Over 4K-->
+  <div class="over-4k" data-ng-show="vm.authModel.process_card === '1' && vm.businessEstablished">
+
+    <div class="panel-title loan-options-title"
+         data-ng-repeat="opt in vm.fieldOptions.over4K"
+         data-ng-show="opt.title">
+      <b> {{ opt.name }} </b>
+    </div>
+
+    <div class="row">
+      <div class="btn-group col-xs-12">
+        <label class="btn btn-default col-xs-6 form-button"
+               uib-btn-radio="opt.value"
+               data-ng-repeat="opt in vm.fieldOptions.over4K"
+               data-ng-hide="opt.title"
+               name="over4K"
+               required
+               data-ng-click="vm.updateAnswerModel10()"
+               data-ng-model="vm.authModel.process_over_2500">
+          <span>{{ opt.name }}</span>
+        </label>
+      </div>
+    </div>
+    <span class="help-block" data-ng-show="loanOptionsForm.over4K.$invalid && loanOptionsForm.$submitted">This field is required</span>
+  </div>
+
+  <!-- Other businesses -->
+  <div class="other-businesses" data-ng-show="vm.businessEstablished">
+    <div class="panel-title loan-options-title"
+         data-ng-repeat="opt in vm.fieldOptions.otherBusinesses"
+         data-ng-show="opt.title">
+      <b> {{ opt.name }} </b>
+    </div>
+
+    <div class="row">
+      <div class="btn-group col-xs-12">
+        <label class="btn btn-default col-xs-6 form-button"
+               uib-btn-radio="opt.value"
+               data-ng-repeat="opt in vm.fieldOptions.otherBusinesses"
+               data-ng-hide="opt.title"
+               name="otherBusinesses"
+               required
+               data-ng-click="vm.authModel.answer[9] = opt.originalValue"
+               data-ng-model="vm.authModel.customers_other_businesses">
+          <span>{{ opt.name }}</span>
+        </label>
+      </div>
+    </div>
+    <span class="help-block" data-ng-show="loanOptionsForm.otherBusinesses.$invalid && loanOptionsForm.$submitted">This field is required</span>
+  </div>
+
+  <!-- Over 5M-->
+  <div class="over-5m" data-ng-show="vm.authModel.customers_other_businesses === '1' && vm.businessEstablished">
+    <div class="panel-title loan-options-title"
+         data-ng-repeat="opt in vm.fieldOptions.over5M"
+         data-ng-hide="!opt.title">
+      <b> {{ opt.name }} </b>
+    </div>
+
+    <div class="row">
+      <div class="btn-group col-xs-12">
+        <label class="btn btn-default col-xs-6 form-button same-value"
+               uib-btn-radio="opt.value"
+               data-ng-repeat="opt in vm.fieldOptions.over5M"
+               data-ng-hide="opt.title"
+               name="over5M"
+               required
+               data-ng-model="vm.authModel.revenues_over_5m">
+          <span>{{ opt.name }}</span>
+        </label>
+      </div>
+    </div>
+    <span class="help-block" data-ng-show="loanOptionsForm.over5M.$invalid && loanOptionsForm.$submitted">This field is required</span>
+  </div>
+
+  <!-- Guarantee -->
+  <div class="guarantee" data-ng-show="vm.businessEstablished">
+    <div class="panel-title loan-options-title"
+         data-ng-repeat="opt in vm.fieldOptions.guarantee"
+         data-ng-hide="!opt.title">
+      <b> {{ opt.name }} </b>
+    </div>
+
+    <div class="row">
+      <div class="btn-group col-xs-12">
+        <label class="btn btn-default col-xs-6 form-button"
+               uib-btn-radio="opt.value"
+               data-ng-repeat="opt in vm.fieldOptions.guarantee"
+               data-ng-hide="opt.title"
+               name="guarantee"
+               required
+               data-ng-click="vm.authModel.answer[12] = opt.originalValue"
+               data-ng-model="vm.authModel.personal_guarantee">
+          <span>{{ opt.name }}</span>
+        </label>
+      </div>
+    </div>
+    <span class="help-block" data-ng-show="loanOptionsForm.guarantee.$invalid && loanOptionsForm.$submitted">This field is required</span>
+  </div>
+
+</div>
+
+<div class="loan-options-form-section">
+  <div class="form-group">
+    <label for="company-number">Company number</label>
+    <input type="text"
+           class="form-control needsclick"
+           id="inputError"
+           name="company-number"
+           required
+           data-ng-model="vm.authModel.company_number"/>
+                <span class="help-block"
+                      data-ng-show="loanOptionsForm.companyNumber.$invalid && loanOptionsForm.$submitted">
+                    This field is required
+                </span>
+  </div>
+
+  <div class="form-group">
+    <label for="company-name">Company name</label>
+    <input type="text"
+           class="form-control needsclick"
+           id="inputError"
+           name="company-name"
+           required
+           data-ng-model="vm.authModel.company"/>
+                <span class="help-block"
+                      data-ng-show="loanOptionsForm.companyName.$invalid && loanOptionsForm.$submitted">
+                    This field is required
+                </span>
+  </div>
+
+  <div class="form-group">
+    <label for="postal-code">Postal code</label>
+    <input type="text"
+           class="form-control needsclick"
+           id="postal-code"
+           name="postalCode"
+           required
+           data-ng-model="vm.authModel.postal_code"/>
+                <span class="help-block"
+                      data-ng-show="loanOptionsForm.postalCode.$invalid && loanOptionsForm.$submitted">
+                    This field is required
+                </span>
+  </div>
+
+  <div class="form-group">
+    <label for="phone">UK Mobile phone number</label>
+    <input type="text"
+           class="form-control needsclick"
+           id="phone"
+           name="phone"
+           required
+           data-ng-model="vm.authModel.phone"/>
+                <span class="help-block"
+                      data-ng-show="loanOptionsForm.phone.$invalid && loanOptionsForm.$submitted">
+                    This field is required
+                </span>
+  </div>
+</div>
+
+<div class="checkbox-inline approved">
+  <input type="checkbox"
+         class="needsclick"
+         id="approved"
+         name="approved"
+         required
+         data-ng-model="vm.authModel.approved"/>
+  <label for="approved">I have reviewed the information above and can approve that it is valid</label>
+                <span class="help-block"
+                      data-ng-show="loanOptionsForm.approved.$invalid && loanOptionsForm.$submitted">
+                    This field is required
+                </span>
+</div>
+<div class="section approve-text text-center col-xs-10 col-xs-push-1">
+  By clicking "check your loan options" you agree to our Termas of Service and Privacy Policy
+</div>
+
+<button class="btn btn-warning loan-options-btn btn-block">
+  CHECK YOUR LOAN OPTIONS
+</button>
+
+</form>
+</div>
+</div>

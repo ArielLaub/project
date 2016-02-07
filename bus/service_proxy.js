@@ -68,9 +68,7 @@ class ServiceProxy {
                             }
                             if (response.error)
                                 throw new GeneralError(response.error.message, response.error.code);
-                            return response.result.message.encodeJSON ? 
-                                        JSON.parse(response.result.message.encodeJSON()) :
-                                        response.result.message;
+                                return response.result.message;
                         });                            
                 };
             });

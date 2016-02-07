@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package Identity;
+
+message ValidateCompanyRequest {
+    string company_number = 1;
+    string company_name = 2;
+}
+
+message ValidateCompanyResponse {    
+    bool valid = 1;
+    string error = 2;
+}
+
+
+service Service {
+    rpc validateCompany(Identity.ValidateCompanyRequest) returns(Identity.ValidateCompanyResponse);
+    
+}

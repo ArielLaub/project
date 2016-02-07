@@ -1,0 +1,68 @@
+<div class="home-step1">
+
+    <div data-ng-include="'app/modules/common/templates/steps.html'"></div>
+
+    <div class="intro text-center">
+        You are 2 min. away from viewing<br />
+        your best suited loan options
+    </div>
+
+    <div class="section">
+        <form role="form"
+              name="homeForm"
+              novalidate
+              class="fundbird-form"
+              id="home-step2-form"
+              data-ng-submit="vm.homeFormSubmit()"
+          >
+
+          <div class="form-group">
+            <label for="loan-amount">Desired loan amount</label>
+            <input type="text"
+                   class="form-control needsclick"
+                   id="loan-amount"
+                   name="1"
+                   required
+                   data-ng-model="vm.authModel.exact_loan_amount"
+                   placeholder="Desired loan amount"/>
+                <span class="help-block"
+                      data-ng-show="homeForm.loanAmount.$invalid && homeForm.submitted">
+                    This field is required
+                </span>
+          </div>
+
+          <div class="form-group styled-select"
+               data-ng-class="{'has-error' : loanOptionsForm.loanPurpose.$invalid && loanOptionsForm.submitted === true}">
+            <select class="form-control needsclick list-selector"
+                    name="loanPurpose"
+                    id="inputError"
+                    required
+                    data-ng-class="{'pre-select': !vm.authModel.answer[3]}"
+                    data-ng-options="opt.value as opt.name for opt in vm.fieldOptions.loanPurpose"
+                    data-ng-model="vm.authModel.answer[3]">
+            </select>
+            <span class="help-block" data-ng-show="homeForm.loanPurpose.$invalid && homeForm.submitted">This field is required</span>
+          </div>
+
+          <div class="form-group styled-select"
+               data-ng-class="{'has-error' : loanOptionsForm.businessState.$invalid && loanOptionsForm.submitted === true}">
+            <label for="loan-amount">Desired loan amount</label>
+            <select class="form-control needsclick"
+                    name="businessState"
+                    id="business-state"
+                    required
+                    data-ng-class="{'pre-select': !vm.authModel.answer[4]}"
+                    data-ng-options="opt.value as opt.name for opt in vm.fieldOptions.businessState"
+                    data-ng-model="vm.authModel.answer[4]">
+            </select>
+            <span class="help-block" data-ng-show="homeForm.businessState.$invalid && homeForm.submitted">This field is required</span>
+          </div>
+
+            <button class="btn btn-warning loan-options-btn btn-block">
+                CHECK YOUR LOAN OPTIONS
+            </button>
+
+        </form>
+    </div>
+
+</div>

@@ -47,6 +47,8 @@ function resetAccounts() {
                 table.string('company', 60);
                 table.string('postal_code', 20);
                 table.string('phone', 20);
+                table.integer('reffid');
+                table.integer('affid');
                 table.timestamp('reset_password_expires_at');
             });                
         }).tap(() => {

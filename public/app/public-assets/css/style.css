@@ -1,0 +1,419 @@
+/* HEADER */
+
+/* GENERAL */
+body {
+    position: absolute;
+    font-family: 'Roboto', sans-serif;
+}
+
+.home .intro {
+    color: #fff;
+    background: #34AED8;
+    padding-bottom: 20px;
+    padding-top: 20px;
+    margin-bottom: 2vw;
+    overflow: hidden;
+}
+
+.intro .slogan {
+    font-size: 10vw;
+    line-height: 11vw;
+}
+
+.intro .sub-slogan {
+    font-size: 5.5vw;
+    margin-top: 1vw;
+}
+
+.line-15 {
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.line-5 {
+    margin-bottom: 5px;
+    overflow: hidden;
+}
+
+.line-30 {
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.login-link {
+    font-size: 12px;
+}
+
+.intro {
+    color: #26afda;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+.loan-options-title {
+    margin-bottom: 10px;
+    margin-top: 15px;
+}
+
+.title {
+    color: #26afda;
+}
+
+/* MENU */
+.ng-pageslide {
+    background: #eee;
+}
+
+.modal-fundbird li {
+    margin-bottom: 10px;
+}
+
+.modal-fundbird li a {
+    text-transform: uppercase;
+}
+
+.modal-fundbird li a,
+.main-menu .support {
+    color: #000;
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+}
+
+.main-menu .support {
+    margin-top: 20px;
+}
+
+.profile-menu ul {
+    text-align: right;
+}
+
+.asseen .logos {
+    margin-top: 10px;
+}
+
+.steps-instructions, .statistics, .three-slogans {
+    color: #FFF;
+    background: #34AED8;
+    overflow: hidden;
+    padding: 10vw 0;
+    margin: 5vw 0;
+}
+
+.steps-instruction-title {
+    font-size: 6vw;
+}
+
+.steps-instruction-description {
+    font-size: 4vw;
+}
+
+.three-slogans-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 10vw;
+}
+
+.three-slogans-description {
+    font-size: 6vw;
+    line-height: 7vw;
+}
+
+.partners-title, .statistics-title {
+    font-size: 6vw;
+}
+
+/* HOME */
+
+/* LOAN OPTIONS */
+.loan-options-btn {
+    background: #ff7e00;
+    border: none;
+    margin-top: 20px;
+}
+
+.loan-options-btn:hover {
+    background-color: #ff7e00;
+}
+
+.loan-options-form-wrapper {
+    padding: 10px 25px;
+}
+
+.loan-options-form-section {
+    padding: 15px;
+    background-color: #F7F4F4;
+    margin-bottom: 20px;
+}
+
+.approved label {
+    font-size: 10px;
+}
+
+.approve-text {
+    font-size: 16px;
+    color: orange;
+    line-height: 18px;
+    font-weight: bold;
+}
+
+.fundbird-form .business-type, .fundbird-form .loan-term {
+    overflow: hidden;
+}
+
+.fundbird-form select.ng-valid,
+.fundbird-form input.ng-valid {
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
+}
+
+.fundbird-form select.ng-valid option {
+    background-color: #fff;
+}
+
+.fundbird-form .loan-term {
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+.fundbird-form .btn:hover,
+.clicked-button {
+    border-color: #ccc !important;
+    background-color: #ccc !important;
+}
+
+.fundbird-form .loan-term .form-control {
+    border-bottom: 0;
+}
+
+.fundbird-form .col-xs-12 {
+    padding-right: 14px;
+}
+
+.sole-trader, .partnership {
+    border-bottom: none;
+}
+
+.register .or {
+    font-size: 12px;
+    color: #000;
+}
+
+.register .login {
+    font-size: 14px;
+    text-decoration: underline;
+}
+
+/* ABOUT */
+.about {
+    background-color: #eee;
+    padding-top: 30px;
+    font-family: 'Open Sans';
+    font-size: 16px;
+}
+
+.about h5 {
+    font-weight: bold;
+}
+
+/* FOOTER */
+footer .logos {
+    text-align: center;
+}
+
+footer .security-info {
+    clear: both;
+    font-weight: bold;
+}
+
+/* Result */
+
+.results {
+    color: #000;
+}
+
+.results .box {
+    border: 1px solid #ccc;
+    min-height: 80px;
+    overflow: hidden;
+    display: table;
+    table-layout: fixed;
+    padding: 8px;
+}
+
+.results .box div:first-child {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.results .box-wrapper {
+    background: #fff;
+    overflow: hidden;
+}
+
+.results .results-company {
+    padding: 10px;
+    background: #F2F2F2;
+    overflow: hidden;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+.results-company title {
+    color: aqua;
+}
+
+.results .get-funding-btn {
+    border: none;
+    height: 50px;
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.results .get-funding-btn a {
+    color: #fff;
+}
+
+.results-company .more-info {
+    background-color: #fff;
+}
+
+.results-company .tab-content {
+    padding: 15px;
+}
+
+.results-company .tab-content .block {
+    margin-bottom: 5px;
+}
+
+/* TEMP */
+.app {
+    background-color: #fff;
+}
+
+.btn {
+    border-radius: 0;
+}
+
+/* BOOTSTRAP OVERRIDE */
+.navbar-app .btn-navbar, .navbar-app .btn {
+    text-transform: none;
+}
+
+.btn-success {
+    background-color: #7AC943;
+}
+
+.form-control {
+    border-radius: 0;
+}
+
+.styled-select {
+    -webkit-appearance: none;
+    position: relative;
+}
+
+.styled-select select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    /*
+        content: "\f078";
+        font-family: FontAwesome;
+    */
+    background: url(https://dl.dropboxusercontent.com/u/59666091/v.png) no-repeat 97% 50% #fff;
+}
+
+form .pre-select {
+    color: #ccc;
+}
+
+form .pre-select option {
+    color: #333;
+}
+
+.btn-group > .btn-default.active, .btn-group > .btn-default.active:focus, .btn-group > .btn-default.active:hover {
+    border-color: #ccc !important;
+    color: #333 !important;
+    background-color: #ccc !important;
+}
+
+/* STEPS */
+.progresss {
+    list-style: none;
+    margin: 0;
+    height: 70px;
+    padding: 0;
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    color: #849397;
+}
+
+.progresss > li {
+    position: relative;
+    display: table-cell;
+    text-align: center;
+    font-size: 0.8em;
+}
+
+.progresss > li:before {
+    content: attr(data-step);
+    display: block;
+    margin: 0 auto;
+    background: #DFE3E4;
+    width: 3em;
+    height: 3em;
+    text-align: center;
+    margin-bottom: 0.25em;
+    line-height: 3em;
+    border-radius: 100%;
+    position: relative;
+    z-index: 1000;
+}
+
+.progresss > li:after {
+    content: '';
+    position: absolute;
+    display: block;
+    background: #DFE3E4;
+    width: 100%;
+    height: 0.5em;
+    top: 1.25em;
+    left: 50%;
+    z-index: -1;
+}
+
+.progresss > li:last-child:after {
+    display: none;
+}
+
+.progresss > li.is-active {
+    color: #3498DB;
+}
+
+.progresss > li.is-active:before {
+    color: #FFF;
+    background: #3498DB;
+}
+
+.progresss > li.is-complete {
+    color: #2ECC71;
+}
+
+.progresss > li.is-complete:before {
+    color: #FFF;
+    background: #2ECC71;
+}
+
+*, *:after, *:before {
+    box-sizing: border-box;
+}
+
+.progresss {
+    margin-bottom: 3em;
+    margin-top: 3em;
+}
+
+.progresss span {
+    font-size: 14px;
+}

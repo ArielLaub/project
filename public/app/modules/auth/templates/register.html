@@ -1,0 +1,66 @@
+<div class="register">
+  <div data-ng-include="'app/modules/common/templates/steps.html'"></div>
+
+  <div class="intro text-center">
+    Create an account to view your personalised loan options <br />
+    <div class="or">OR</div>
+    <div class="login"><a data-ui-sref="root.login">Login</a></div>
+  </div>
+</div>
+
+<div class="content-wrapper register col-xs-12">
+  <form name="registerForm"
+        novalidate
+        class="fundbird-form"
+        id="register-form"
+        data-ng-submit="vm.registerFormSubmit(vm.registerModel.firstName, vm.registerModel.lastName, vm.registerModel.email)">
+
+    <div class="form-group">
+      <label for="first-name">First Name</label>
+      <input type="text"
+             class="form-control needsclick"
+             id="first-name"
+             name="firstName"
+             required
+             data-ng-model="vm.registerModel.firstName"/>
+                <span class="help-block"
+                      data-ng-show="registerForm.firstName.$invalid && registerForm.$submitted">
+                    This field is required
+                </span>
+    </div>
+
+    <div class="form-group">
+      <label for="last-name">Last Name</label>
+      <input type="text"
+             class="form-control needsclick"
+             id="last-name"
+             name="lastName"
+             required
+             data-ng-model="vm.registerModel.lastName"/>
+                <span class="help-block"
+                      data-ng-show="registerForm.lastName.$invalid && registerForm.$submitted">
+                    This field is required
+                </span>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email"
+             class="form-control needsclick"
+             id="email"
+             name="email"
+             required
+             data-ng-model="vm.registerModel.email"/>
+                <span class="help-block"
+                      data-ng-show="registerForm.email.$invalid && registerForm.$submitted">
+                    This field is required
+                </span>
+    </div>
+
+    <button class="btn btn-warning loan-options-btn btn-block">
+      Register
+    </button>
+
+  </form>
+
+</div>

@@ -1,0 +1,30 @@
+{
+  "name": "loanfinder-mobile",
+  "authors": [
+    "Roni Gal <roni@codebyz.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.8",
+    "angular-bootstrap": "~0.14.3",
+    "angular-ui-router": "~0.2.15",
+    "jquery": "~2.1.4",
+    "angular-animate": "~1.4.8",
+    "angular-local-storage": "~0.2.3",
+    "angular-fontawesome": "~1.0.0",
+    "mobile-angular-ui": "~1.2.0-rc.3",
+    "angular-pageslide-directive": "ng-pageslide#~1.0.8",
+    "angular-sanitize": "~1.4.9"
+  }
+}

@@ -58,6 +58,10 @@ class Config {
     static get hasOffersApiKey() {
         return 'NETwViJIrY3nnR2t1a5lsnGIwLE5i2';
     }
+    
+    static get companiesHouseApiKey() {
+        return 'KuXr064_IWl66UGg0j_FBIxhBNm54-USSLRfdTXp';
+    }
 }
 
 class Development extends Config {

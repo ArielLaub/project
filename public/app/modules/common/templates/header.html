@@ -1,0 +1,41 @@
+<div class="navbar navbar-app navbar-absolute-top">
+
+  <div class="navbar-brand navbar-brand-center">
+        <span data-ui-sref="root.home">
+            FUNDBIRD LOGO
+        </span>
+  </div>
+
+  <div class="btn-group pull-left">
+    <div class="btn btn-navbar" ng-click="vm.toggleM()">
+      <i class="fa fa-bars"></i>
+
+      <div pageslide ps-side="top" ps-size="200px" ps-auto-close="true" ps-push="true" ps-open="vm.checkedM">
+        <div class="main-menu menu">
+          <div data-ng-include="'app/modules/common/templates/main-menu.html'"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="btn-group pull-right" data-ng-show="!vm.authModel.loggedIn">
+    <div data-ui-sref="root.login" class="btn btn-navbar">
+      Log In <i class="fa fa-caret-right"></i>
+    </div>
+  </div>
+
+  <div class="btn-group profile-menu pull-right" data-ng-show="vm.authModel.loggedIn">
+    <div class="btn btn-default" ng-click="vm.toggleP()">
+      {{ vm.authModel.name}}
+
+      <div pageslide ps-side="top" ps-size="120px" ps-auto-close="true" ps-push="true" ps-open="vm.checkedP">
+        <div class="profile-menu menu">
+          <div data-ng-include="'app/modules/common/templates/profile-menu.html'"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
