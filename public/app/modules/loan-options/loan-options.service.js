@@ -119,10 +119,10 @@
         var deferred = $q.defer();
         $http.post('/api/identity/verifyCompany', data)
             .then(function success(data, status, headers, config) {
-                if (data.result.valid)
+                if (data.data.success)
                     deferred.resolve();
                 else
-                    deferred.reject({error: data.result.error, field: data.result.field});
+                    deferred.reject({error: data.data.error, field: data.data.field});
             },
             function error(data, status, headers, config) {
                 deferred.reject({error: 'could not validate company number', field: 'number'})
@@ -135,8 +135,9 @@
         var deferred = $q.defer();
         $http.post('/api/loans/find', post)
             .then(function success(data, status, headers, config) {
-                angular.extend(_model, data.result.matches);
-                deferred.resolve(data);
+                debugger;
+                angular.extend(_model, data.data.result);
+                deferred.resolve();
                 $state.go('root.result');
             }, function error(data, status, headers, config) {
                 deferred.reject(data);

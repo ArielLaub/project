@@ -70,13 +70,13 @@
 
       $http.post('/api/accounts/logout')
         .success(function (data, status, headers, config) {
-          deferred.resolve(data);
+          deferred.resolve(data.data.result);
           
           angular.extend(_model, data);
             $state.go('root.login');
         })
         .error(function (data, status, headers, config) {
-          deferred.reject(data);
+          deferred.reject(data.data.error);
         });
 
       return deferred.promise;
@@ -89,11 +89,10 @@
         .success(function (data, status, headers, config) {
           _model.loggedIn = true;
           angular.extend(_model, data);
-
-          deferred.resolve(data);
+          deferred.resolve();
         })
         .error(function (data, status, headers, config) {
-          deferred.reject(data);
+          deferred.reject(data.data.error);
         });
 
       return deferred.promise;
@@ -111,12 +110,12 @@
         .success(function (data, status, headers, config) {
           _model.loggedIn = true;
           angular.extend(_model, data);
-          deferred.resolve(data);
+          deferred.resolve(data.data.result);
           $state.go('root.loan-options');
         })
         .error(function (data, status, headers, config) {
-          $log.debug(data.message);
-          deferred.reject(data);
+          $log.debug(data.data.error);
+          deferred.reject(data.data.error);
         });
 
       return deferred.promise;

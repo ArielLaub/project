@@ -49,7 +49,7 @@
             loanOptionsService.validateCompanyNumber(
                 vm.authModel.company_number, vm.authModel.company, vm.authModel.answer[4]).then(function(error) {
                     if (error) {
-                        
+                        $scope.loanOptionsForm.companyNumber.capabilities.$setValidity("youAreFat", false);
                     }
                     return loanOptionsService.saveLoanOptions(vm.authModel);
                 });

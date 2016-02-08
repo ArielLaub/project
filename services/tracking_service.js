@@ -73,8 +73,8 @@ class TrackingService extends MessageService {
                 response.data.data.forEach(value => {
                     try {
                         result.push({
-                            account_id: parseInt(value.Stat[ACCOUNT_ID_FIELD_NAME]),
-                            process_id: parseInt(value.Stat[PROCESS_ID_FIELD_NAME]),
+                            account_id: utils.parseInt(value.Stat[ACCOUNT_ID_FIELD_NAME]),
+                            process_id: utils.parseInt(value.Stat[PROCESS_ID_FIELD_NAME]),
                             offer_id: value.Stat['offer_id'],
                             name: value.Offer['name']
                         });

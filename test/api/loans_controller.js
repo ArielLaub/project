@@ -88,6 +88,7 @@ describe('Loans Controller tests', function() {
                 if (err) return done(err);
                 expect(response.body).to.have.property('success', true);
                 expect(response.body).to.have.property('result');
+                expect(response.body.result).to.have.length.greaterThan(0);
                 done();
             });
     });
