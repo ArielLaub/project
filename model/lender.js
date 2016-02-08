@@ -18,13 +18,21 @@ var Lender = bookshelf.Model.extend({
     
     lenderType: function() {
         return this.belongsTo(LenderType);
+    },
+    
+    exToJSON: function() {
+        var json = this.toJSON();
+        json.requirements = JSON.parse(json.requirements);
+        return json;
     }
 }, 
 {  
     tableName: TABLE_NAME,
               
     getLenderById: function(id) {
-        return new this({id: id}).fetch({withRelated: ['lenderType'], require: true});
+        return new this({id: id}).fetch({withRelated: ['lenderType'], require: true}).then(lender => {
+            return lender.exToJSON();
+        });
     },
     
     getAll: function(andFilters) {
@@ -32,7 +40,7 @@ var Lender = bookshelf.Model.extend({
         return (new this())
             .query(query)
             .fetchAll().then(_results => {
-                var results = _results.map(result => result.toJSON());
+                var results = _results.map(result => result.exToJSON());
                 return results;
             });            
     }

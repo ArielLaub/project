@@ -11,6 +11,7 @@ var questions = require('./loan_finder/questions');
 var LenderPreference = require('../model/lender_preference');
 var Lender = require('../model/lender');
 var LoanProcess = require('../model/loan_process');
+var LenderType = require('../model/lender_type');
 
 const HOW_MUCH_FUNDING_QUESTION_ID = 1;
 const FUNDING_PURPOSE_QUESTION_ID = 3;
@@ -63,9 +64,13 @@ class LoadFinderService extends MessageService {
             return LoanProcess.getLastByAccountId(request.account_id);
         }).then(process => {
             if (!process) return {};
+            Object.keys(process.form_fields.answer).forEach(question => {
+                //legacy: answers were stored as map<string, string> 
+                process.form_fields.answer[question] = String(process.form_fields.answer[question]);
+            });
             return {
                 form_fields: process.form_fields,
-                results: process.results
+                //results: process.results
                 //status: process ? process.status : -1
             }
         });
@@ -83,6 +88,96 @@ class LoadFinderService extends MessageService {
         var answers;
         var formFields;
         
+        function _scoreResult(result, lender) {
+            //SCORING RULES 
+            //====================
+                                    
+            //Invoice Funding Type
+            //and customer has other businesses or revenues over 5m
+            //then remove
+            if (INVOICE_LENDER_TYPE_ID === lender.company_types_id &&
+                (!formFields.customers_other_businesses || formFields.revenues_over_5m)) {
+                result.score = -100;
+            }
+            
+            // Asset Based Finance Type
+            // get priority if "Loan purpose" is related to "Purchase assets".
+            if (ASSET_BASED_FINANCE_TYPE_ID === lender.company_types_id &&
+                PURCHASE_ASSETS_ANSWER_ID === answers[FUNDING_PURPOSE_QUESTION_ID]) {
+                result.score += 6
+            }
+
+            // Property Loan Type
+            // get priority if "Loan purpose" is related to "Purchase assets".
+            if (PROPERY_LOAN_TYPE_ID === lender.company_types_id &&
+                REAL_ESTATE_ANSWER_ID === answers[FUNDING_PURPOSE_QUESTION_ID]) {
+                result.score += 5
+            }
+            
+            // Revolving credit
+            // always get a huge boost???
+            if (REVOLVING_CREDIT_LENDER_ID === lender.id) {
+                result.score += 50;
+            }
+            
+            // Marketinvoice
+            // if invoices + business 6 month + min revenues 100k
+            //TODO: invoices?
+            if (MARKET_INVOICE_LENDER_ID === lender.id &&
+                MORE_THAN_6_MONTHS_OLD_ANSWER_IDS.indexOf(answers[HOW_LONG_IN_BUSINESS_QUESTION_ID]) !== -1 &&
+                MORE_THAN_100K_REVENUES_ANSWER_IDS.indexOf(answers[BUSINESS_YEARLY_REVENUE_QUESTION_ID]) !== -1) {
+                result.score += 10;
+            }
+            
+            // Funding Invoice 
+            // always gets priority???
+            if (FUNDING_INVOICE_LENDER_ID === lender.id) {
+                result.score += 9;
+            }
+            
+            // Invoice Cycle
+            // (if invoices + business 12 month + min revenues 10k)
+            //TODO: invoices?
+            if (INVOICE_CYCLE_LENDER_ID === lender.id &&
+                MORE_THAN_12_MONTHS_OLD_ANSWER_IDS.indexOf(answers[HOW_LONG_IN_BUSINESS_QUESTION_ID]) !== -1 &&
+                MORE_THAN_10K_REVENUES_ANSWER_IDS.indexOf(answers[BUSINESS_YEARLY_REVENUE_QUESTION_ID]) !== -1) {
+                result.score += 8;
+            }
+            
+            // Liberis get priority if has card payments and over 4k.
+            if (LIBERIS_LENDER_ID === lender.id &&
+                formFields.process_card &&
+                formFields.process_over_2500) {
+                result.score += 7;
+            }
+            
+            // Ebury
+            if (EBURY_LENDER_ID === lender.id) {
+                //if purpose is Purchase Inventory or Import
+                if ([PURCHASE_INVENTORY_ANSWER_ID,IMPORT_ANSWER_ID].indexOf(answers[FUNDING_PURPOSE_QUESTION_ID]) !== -1) {
+                    result.score += 4;         
+                }
+                        
+                //amount <50k pounds
+                //then remove.
+                if (LESS_THAN_50K_FUNDING_ANSWER_IDS.indexOf(answers[HOW_MUCH_FUNDING_QUESTION_ID]) !== -1) { 
+                    result.score = -100;                 
+                }
+            }
+        }
+        
+        function _buildUrl(lender) {
+            let url = lender.url;
+            url += ((url && url.indexOf('?')) !== -1 ? '&' : '?') + 
+                `aff_sub4=${request.account_id}`;
+            if (request.affiliate_id)
+                url += `&aff_sub5=${request.affiliate_id}`;
+            if (request.affiliate_sub_id)
+                url += `&aff_sub2=${request.affiliate_sub_id}`;
+            
+            return url;
+        }
+        
         return new Promise(resolve => {
             if (!request.account_id) throw new Errors.AccountIdRequired();
             if (!request.form_fields || !request.form_fields.answer) throw new Errors.AnswersRequired();
@@ -97,12 +192,12 @@ class LoadFinderService extends MessageService {
                         //the score for that lender by one
                         return Promise.each(lenderIds, lenderId => {
                             if (!resultByLenderId.has(lenderId))
-                                resultByLenderId.set(lenderId, {lender_id: lenderId, score: 100});
+                                resultByLenderId.set(lenderId, {company_id: lenderId, score: 100});
                             else
                                 resultByLenderId.get(lenderId).score += 100;                        
                         });    
                     });
-            })            
+            });          
         }).then(() => {
             return Lender.getAll();          
         }).then(lenders => {
@@ -110,116 +205,63 @@ class LoadFinderService extends MessageService {
             //account_id => aff_sub query param
             //affiliate_id => aff_sub5
             //affiliate_sub_id => aff_sub2
-            lenders.forEach(lender => {
-                if (resultByLenderId.has(lender.id)) {
-                    var result = resultByLenderId.get(lender.id);
-                    result.url = lender.url;
-                    result.url += ((result.url && result.url.indexOf('?')) !== -1 ? '&' : '?') + 
-                        `aff_sub4=${request.account_id}`;
-                    result.name = lender.name;
-                    result.description = lender.description;
-                    if (request.affiliate_id)
-                        result.url += `&aff_sub5=${request.affiliate_id}`;
-                    if (request.affiliate_sub_id)
-                        result.url += `&aff_sub2=${request.affiliate_sub_id}`;
-
-                    //SCORING RULES 
-                    //====================
-                                            
-                    //Invoice Funding Type
-                    //and customer has other businesses or revenues over 5m
-                    //then remove
-                    if (INVOICE_LENDER_TYPE_ID === lender.company_types_id &&
-                        (!formFields.customers_other_businesses || formFields.revenues_over_5m)) {
-                        result.score = -100;
-                    }
-                    
-                    // Asset Based Finance Type
-                    // get priority if "Loan purpose" is related to "Purchase assets".
-                    if (ASSET_BASED_FINANCE_TYPE_ID === lender.company_types_id &&
-                        PURCHASE_ASSETS_ANSWER_ID === answers[FUNDING_PURPOSE_QUESTION_ID]) {
-                        result.score += 6
-                    }
-
-                    // Property Loan Type
-                    // get priority if "Loan purpose" is related to "Purchase assets".
-                    if (PROPERY_LOAN_TYPE_ID === lender.company_types_id &&
-                        REAL_ESTATE_ANSWER_ID === answers[FUNDING_PURPOSE_QUESTION_ID]) {
-                        result.score += 5
-                    }
-                    
-                    // Revolving credit
-                    // always get a huge boost???
-                    if (REVOLVING_CREDIT_LENDER_ID === lender.id) {
-                        result.score += 50;
-                    }
-                    
-                    // Marketinvoice
-                    // if invoices + business 6 month + min revenues 100k
-                    //TODO: invoices?
-                    if (MARKET_INVOICE_LENDER_ID === lender.id &&
-                        MORE_THAN_6_MONTHS_OLD_ANSWER_IDS.indexOf(answers[HOW_LONG_IN_BUSINESS_QUESTION_ID]) !== -1 &&
-                        MORE_THAN_100K_REVENUES_ANSWER_IDS.indexOf(answers[BUSINESS_YEARLY_REVENUE_QUESTION_ID]) !== -1) {
-                        result.score += 10;
-                    }
-                    
-                    // Funding Invoice 
-                    // always gets priority???
-                    if (FUNDING_INVOICE_LENDER_ID === lender.id) {
-                        result.score += 9;
-                    }
-                    
-                    // Invoice Cycle
-                    // (if invoices + business 12 month + min revenues 10k)
-                    //TODO: invoices?
-                    if (INVOICE_CYCLE_LENDER_ID === lender.id &&
-                        MORE_THAN_12_MONTHS_OLD_ANSWER_IDS.indexOf(answers[HOW_LONG_IN_BUSINESS_QUESTION_ID]) !== -1 &&
-                        MORE_THAN_10K_REVENUES_ANSWER_IDS.indexOf(answers[BUSINESS_YEARLY_REVENUE_QUESTION_ID]) !== -1) {
-                        result.score += 8;
-                    }
-                    
-                    // Liberis get priority if has card payments and over 4k.
-                    if (LIBERIS_LENDER_ID === lender.id &&
-                        formFields.process_card &&
-                        formFields.process_over_2500) {
-                        result.score += 7;
-                    }
-                    
-                    // Ebury
-                    if (EBURY_LENDER_ID === lender.id) {
-                        //if purpose is Purchase Inventory or Import
-                        if ([PURCHASE_INVENTORY_ANSWER_ID,IMPORT_ANSWER_ID].indexOf(answers[FUNDING_PURPOSE_QUESTION_ID]) !== -1) {
-                            result.score += 4;         
-                        }
-                                   
-                        //amount <50k pounds
-                        //then remove.
-                        if (LESS_THAN_50K_FUNDING_ANSWER_IDS.indexOf(answers[HOW_MUCH_FUNDING_QUESTION_ID]) !== -1) { 
-                            result.score = -100;                 
-                        }
-                    }
-                }
-            });
-            
-            //flatten results to an array and sort by score (descending)
+            results = [];
             for (var value of resultByLenderId.values()) 
                  results.push(value);
-            
-            results.sort((a, b) => b.score - a.score);
-            
-            //remove long tail
-            while (results.length > 0 && results[results.length-1].score < 100)
-                results.pop();
-            
-            //only return results we resolved a lender for
-            results = results.filter(result => !!result.name);               
+
+            return Promise.each(lenders, lender => {
+                if (resultByLenderId.has(lender.id)) {
+                   return LenderType.getLenderTypeById(lender.company_types_id)
+                        .then(type => {
+                            let result = resultByLenderId.get(lender.id);
+                            _scoreResult(result, lender);
+
+                            Object.assign(result, {
+                                url: _buildUrl(lender), 
+                                name: lender.name,
+                                company_description: lender.description,
+                                company_requirements: lender.requirements,
+                                company_types_id: lender.company_types_id,
+                                funds_received: lender.funds_received,
+                                cost_rate: lender.cost_rate,
+                                cost_period: lender.cost_period,
+                                trustpilot_rate: parseFloat(lender.trustpilot_rate),
+                                trustpilot_rates: lender.trustpilot_rates,
+                                trustpilot_stars: lender.trustpilot_stars,
+                                amount: parseInt(lender.amount),
+                                terms: lender.terms,
+                                description: lender.description,
+                                logo: lender.logo,
+                                loan_type: type.name,
+                                loan_type_description: type.description,
+                                loan_type_benefits: type.benefits,
+                                loan_type_drawbacks: type.drawbacks
+                            });            
+                        }).catch(() => {
+                            resultByLenderId.delete(lender.id);
+                        });                        
+                } else {
+                    return Promise.resolve();
+                }
+            }).then(() => {
+                //only return results we resolved a lender for
+                results = results.filter(result => !!result.name);               
+                results.sort((a, b) => b.score - a.score);
+
+                //remove long tail
+                while (results.length > 0 && results[results.length-1].score < 700)
+                    results.pop();
+                
+            });
+
         }).then(() => {
-            return LoanProcess.create(request.account_id, answers, formFields, request.results, request.ip);
+            return LoanProcess.create(request.account_id, answers, formFields, results, request.ip);
         }).then(process => {
             results.forEach(result => {
                 result.url += `&aff_sub3=${process.process_id}`;
             });
-            return results;
+
+            return {matches: results};
         });
     }
 }

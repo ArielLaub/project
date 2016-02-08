@@ -33,21 +33,21 @@ describe('Identity Service', () => {
     });
     
     it('should validate a valid company', function(done) {
-        client.validateCompany({company_number: '09847403', company_name: 'orange'}).then(response => {
+        client.verifyCompany({company_number: '09847403', company_name: 'orange'}).then(response => {
             expect(response).to.have.property('valid', true);
             done(); 
         });
     });
 
     it('should fail validating with an invalid company number', function(done) {
-        client.validateCompany({company_number: '10398111', company_name: 'orange'}).then(response => {
+        client.verifyCompany({company_number: '10398111', company_name: 'orange'}).then(response => {
             expect(response).to.have.property('valid', false);
             done();
         });
     });
 
     it('should fail validating with an invalid company name', function(done) {
-        client.validateCompany({company_number: '09847403', company_name: 'blue'}).then(response => {
+        client.verifyCompany({company_number: '09847403', company_name: 'blue'}).then(response => {
             expect(response).to.have.property('valid', false);
             done(); 
         });

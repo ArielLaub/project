@@ -10,10 +10,10 @@ message ValidateCompanyRequest {
 message ValidateCompanyResponse {    
     bool valid = 1;
     string error = 2;
+    string field = 3;
 }
 
 
 service Service {
-    rpc validateCompany(Identity.ValidateCompanyRequest) returns(Identity.ValidateCompanyResponse);
-    
+    rpc verifyCompany(Identity.ValidateCompanyRequest) returns(Identity.ValidateCompanyResponse);
 }

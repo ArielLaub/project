@@ -59,8 +59,8 @@ describe('Loan Finder Service', () => {
                 affiliate_sub_id: 111,
                 form_fields: formFields
             });
-        }).then(results => {
-            expect(results).to.have.length;
+        }).then(result => {
+            expect(result.matches).to.have.length.greaterThan(0);
             done();
         }).catch(done);
     });
@@ -68,7 +68,7 @@ describe('Loan Finder Service', () => {
     it('should get the last account application', function(done) {
         service.getAccountLastApplication({account_id: 1}).then(response => {
             console.log(JSON.stringify(response, null, 4));
-            expect(response).to.have.property('results');
+            //expect(response).to.have.property('results');
             expect(response).to.have.property('form_fields');
             expect(response.form_fields).to.have.property('business_bank_account', formFields.business_bank_account);
             expect(response.form_fields).to.have.property('business_credit_card', formFields.business_credit_card);

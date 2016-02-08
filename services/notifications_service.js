@@ -49,8 +49,7 @@ class NotificationsService extends MessageService {
         }
     }    
 
-    sendMandrillTemplate(request) {
-        
+    sendMandrillTemplate(request) {  
         return new Promise((resolve, reject) => {
             var _handleResponse = function(response) {
                 if (response.status === 'error')
@@ -164,15 +163,41 @@ class NotificationsService extends MessageService {
 
             var mergeVars = [
                 {
-                    rcpt: clientName, 
+                    rcpt: account.email, 
                     vars: templateContent
                 }
             ];
             
             var payload = this._getPayloadTemplate(templateName, templateContent,
-                 `${clientName}, Don't miss the opportunity to get funding for your business`, 
+                 `${account.first_name}, Don't miss the opportunity to get funding for your business`, 
                 ['24h'], clientName, account.email, mergeVars);
                 
+            return this.sendMandrillTemplate(payload);
+        });        
+    }
+    
+    sendInviteFriendEmail(request) {
+        return new Promise(resolve => {
+            if (!request.account_id) throw new Errors.AccountIdRequired();
+            resolve();        
+        }).then(() => {
+            return this.accounts.getAccountById({account_id: request.account_id});
+        }).then(account => {
+            var clientName = `${account.last_name}${account.first_name}`;
+            var mergeVars = [
+                {
+                    rcpt: account.email, 
+                    vars: [
+                        {name: 'fname', content: account.first_name},
+                        {name: 'uid', content: account.id}                                            
+                    ]
+                }
+            ];
+                
+            var payload = this._getPayloadTemplate('invite-a-friend', null,
+                `${account.first_name}, a Special Invitation for you and your friends`, 
+                ['welcome', 'invite'], clientName, account.email, mergeVars);
+
             return this.sendMandrillTemplate(payload);
         });        
     }

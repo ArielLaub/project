@@ -3,7 +3,6 @@ var bookshelf = require('./bookshelf');
 var utils  = require('../utils');
 var logger = utils.logger.create('model.lender_type');
 var Errors = require('../errors');
-var Lender = require('./lender');
 
 const TABLE_NAME = 'company_types';
 var LenderType = bookshelf.Model.extend({
@@ -13,16 +12,23 @@ var LenderType = bookshelf.Model.extend({
         bookshelf.Model.apply(this, arguments);
     },
     
-    lenders: function() {
-        return this.hasMany(Lender);
-    }
+    exToJSON: function() {
+        var json = this.toJSON();
+        json.drawbacks = JSON.parse(json.drawbacks);
+        json.benefits = JSON.parse(json.benefits);
+        return json;
+    }   
 }, 
 {            
     tableName: TABLE_NAME,
 
     getLenderTypeById: Promise.method(function(id) {
-        return new this({id: id}).fetch({withRelated: ['lenders'], require: true});
-    })
+        return new this({id: id}).fetch({require: true}).then(type => {
+            return type.exToJSON();
+        });
+    }),
+    
+    
 });
 
 module.exports = LenderType;

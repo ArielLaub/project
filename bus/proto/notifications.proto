@@ -102,4 +102,5 @@ service Service {
    rpc sendWelcomeEmail(Platform.AccountIdRequest) returns(Notifications.SendEmailResponse);
    rpc sendIframeWelcomeEmail(Platform.AccountIdRequest) returns(Notifications.SendEmailResponse);
    rpc send24hReminderEmail(Notifications.Send24HoursReminderEmailRequest) returns(Notifications.SendEmailResponse);
+   rpc sendInviteFriendEmail(Platform.AccountIdRequest) returns(Notifications.SendEmailResponse);
 }

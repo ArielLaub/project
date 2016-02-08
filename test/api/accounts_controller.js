@@ -100,7 +100,7 @@ describe('Accounts Controller tests', function() {
         request
             .post('/api/accounts/changePassword')
             .set('Accept', 'application/json')
-            .set('Authorization', `Berear ${token}`)
+            .set('Authorization', `Bearer ${token}`)
             .send(params)
             .expect(200)
             .end((err, response) => {

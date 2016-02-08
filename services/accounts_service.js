@@ -26,9 +26,9 @@ class AccountsService extends MessageService {
         };
         this._verify = (token) => {
             return new Promise((resolve, reject) => {
-                jwt.verify(token, this._publicKey, { algorithms: ['RS256'] }, function(err, token) {
+                jwt.verify(token, this._publicKey, { algorithms: ['RS256'] }, function(err, decoded) {
                     if (err) return reject(err);
-                    resolve(token);
+                    resolve({account_id: decoded.id, access_token: token});
                 });
             });
         };
@@ -51,13 +51,14 @@ class AccountsService extends MessageService {
             company_number: request.company_number,
             phone: request.phone,
             postal_code: request.postal_code,
-            reffid: request.referrer_id, //TODO: FIX THIS SILLY TYPO IN DB FIELD NAME!!!
+            reffid: request.referrer_id, //TODO: FIX THIS SILLY TYPO IN DB FIELD NAME
             affid: request.affiliate_id
         };
         return Account.create(account).then(newAccount => {
+            setTimeout(() => {
+                this.notifications.sendWelcomeEmail({account_id: account.id});
+            }, 0);
             account = newAccount;
-            return this.notifications.sendWelcomeEmail({account_id: account.id});                
-        }).then(() => {
             return this._sign({id: account.id});
         }).then(token => {
             let result = {

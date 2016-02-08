@@ -50,7 +50,11 @@ function createApp() {
         logger.warn('API bus connection lost');
     });
     return connection.connectUrl().then(() => {
-        return require('./api/controllers/accounts').init(router, connection);
+        return Promise.all([
+            require('./api/controllers/accounts').init(router, connection),
+            require('./api/controllers/loans').init(router, connection),
+            require('./api/controllers/identity').init(router, connection)
+        ]);
     }).then(() => {
         return app;
     });

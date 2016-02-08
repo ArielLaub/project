@@ -41,16 +41,7 @@ message TokenRequest {
 
 message TokenResponse {
     string access_token = 1;
-}
-
-message TokenPayloadResponse {
-    string iss = 1;
-    string sub = 2;
-    string aud = 3;
-    int32 iat = 4;
-    int32 exp = 5;
-    
-    int32 id = 6;
+    int32 account_id = 2;
 }
 
 message ResetPasswordRequest {
@@ -92,7 +83,7 @@ message AccountResponse {
 service Service {
    rpc create(Accounts.CreateRequest) returns(Accounts.AuthenticateResponse);
    rpc authenticate(Accounts.AuthenticateRequest) returns(Accounts.AuthenticateResponse);
-   rpc verifyToken(Accounts.TokenRequest) returns(Accounts.TokenPayloadResponse);
+   rpc verifyToken(Accounts.TokenRequest) returns(Accounts.TokenResponse);
    rpc refreshToken(Accounts.TokenRequest) returns(Accounts.TokenResponse);
    rpc resetPassword(Accounts.ResetPasswordRequest) returns(Accounts.ResetPasswordResponse);
    rpc setPassword(Accounts.SetPasswordRequest) returns(Platform.MessageResponse);

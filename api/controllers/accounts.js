@@ -29,7 +29,7 @@ function init(router, connection) {
                 if (application)
                     Object.assign(result, application.form_fields);
                 
-                res.set('Authorization', `Bearer ${result.token}`);
+                res.set('Authorization', `Bearer ${result.access_token}`);
                 //logger.error(require('util').inspect(result));
                 res.status(200).json({ success: true, result: result });
             });
@@ -98,6 +98,7 @@ function init(router, connection) {
         };
         
         accountsService.create(params).then(result => {
+            res.set('Authorization', `Bearer ${result.access_token}`);
             res.status(200).json({success: true, result: result});
         }).catch(error => {
             throw error;

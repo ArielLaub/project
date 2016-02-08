@@ -35,7 +35,7 @@ message FormFields {
     bool customers_other_businesses = 8;
     bool revenues_over_5m = 9;
     bool personal_guarantee = 10;
-    map<int32, int32> answer = 11;
+    map<string, string> answer = 11;
 
 }
 
@@ -47,21 +47,37 @@ message GetQualifingLendersRequest {
     string ip = 6;
 }
 
+message LoanOffer {
+    string url = 1;
+    int32 company_id = 2;
+    string company_description = 3;
+    repeated string company_requirements = 4 [packed=true];
+    int32 company_types_id = 5;
+    string funds_received = 6;
+    string cost_rate = 7;
+    string cost_period = 8;
+    float trustpilot_rate = 9;
+    int32 trustpilot_rates = 10;
+    float trustpilot_stars = 11;
+    string amount = 12;
+    string terms = 13;
+    string name = 14;
+    string description = 15;
+    string logo = 16;
+    string loan_type = 17;
+    string loan_type_description = 18;
+    repeated string loan_type_benefits = 19;
+    repeated string loan_type_drawbacks = 20; 
+    int32 score = 21;
+}
+
 message GetQualifingLendersResponse {
-    repeated Match matches = 1;
-    
-    message Match {
-        int32 lender_id = 1;
-        string name = 2;
-        string description = 3;
-        string url = 4;
-        int32 score = 5;
-    }
+    repeated LoanFinder.LoanOffer matches = 1;
 }
 
 message ApplicationResponse {
-    repeated string results = 2 [packed=true];
-    LoanFinder.FormFields form_fields = 3;
+    repeated LoanFinder.LoanOffer results = 1;
+    LoanFinder.FormFields form_fields = 2;
 }
 
 service Service {

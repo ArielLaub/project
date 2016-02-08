@@ -17,7 +17,6 @@
 
                 'response': function interceptResponse(response) {
                     var lowercaseTokName = headerTokenName.toLowerCase();
-
                     if (lowercaseTokName in response.headers()) {
                         var token = response.headers()[lowercaseTokName];
                         if (token.trim() !== '') {

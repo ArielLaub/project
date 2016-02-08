@@ -30,16 +30,10 @@
           vm.authModel.answer[5] = '36'
           vm.authModel.answer[6] = '37'
           vm.authModel.answer[2] = '15'
-          vm.authModel.process_over_2500 = '62'
-          vm.authModel.revenues_over_5m = '60'
-          vm.authModel.personal_guarantee = '72'
-          vm.authModel.company_number = '72'
-        }
-
-        // If company type is llp or limited company, validate the company number field
-        // TODO: make a custom directive
-        if (vm.authModel.answer[6] === '38' || vm.authModel.answer[6] === '41') {
-          loanOptionsService.validateCompanyNumber(vm.authModel.company_number, vm.authModel.company, vm.authModel.answer[4]);
+          vm.authModel.process_over_2500 = '1'
+          vm.authModel.revenues_over_5m = '1'
+          vm.authModel.personal_guarantee = '1'
+          //vm.authModel.company_number = '72'
         }
 
         // Removes the commas
@@ -48,7 +42,20 @@
         if (localStorageService.get('affsub2')) {
           vm.authModel['affid'] = localStorageService.get('affsub2');
         }
-        loanOptionsService.saveLoanOptions(vm.authModel);
+
+        // If company type is llp or limited company, validate the company number field
+        // TODO: make a custom directive
+        if (vm.authModel.answer[6] === '38' || vm.authModel.answer[6] === '41') {
+            loanOptionsService.validateCompanyNumber(
+                vm.authModel.company_number, vm.authModel.company, vm.authModel.answer[4]).then(function(error) {
+                    if (error) {
+                        
+                    }
+                    return loanOptionsService.saveLoanOptions(vm.authModel);
+                });
+        } else {
+            loanOptionsService.saveLoanOptions(vm.authModel);
+        }
       }
       else {
         $scope.loanOptionsForm.submitted = true;
@@ -57,9 +64,9 @@
     };
 
     vm.updateAnswerModel10 = function () {
-      vm.authModel.answer[10] = 63;
-      if (vm.authModel.process_over_2500 === "1" && vm.authModel.process_card === "1") {
-        vm.authModel.answer[10] = 62;
+      vm.authModel.answer[10] = '63';
+      if (vm.authModel.process_over_2500 === '1' && vm.authModel.process_card === '1') {
+        vm.authModel.answer[10] = '62';
       }
     };
 

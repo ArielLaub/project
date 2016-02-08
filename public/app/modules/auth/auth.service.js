@@ -19,15 +19,12 @@
         _model.loginError = null;
         _model.changePasswordError = null;
         _model.loggedIn = true;
-        angular.extend(_model, data.data);
+        angular.extend(_model, data.result);
         deferred.resolve(data);
         $state.go('root.loan-options');
       }, function error(data, status, headers, config) {
        if (data.status === 401) {
-          _model.loginError = data.data.message;
-       }
-        else {
-         _model.loginError = data.statusText;
+          _model.loginError = data.error;
        }
 
         _model.loggedIn = false;
@@ -46,15 +43,15 @@
         confirmPassword: confirmPassword
       }).then(function success(data, status, headers, config) {
         _model.changePasswordError = null;
-        angular.extend(_model, data.data);
+        angular.extend(_model, data.result);
         deferred.resolve(data);
         $state.go('root.loan-options');
       }, function error(data, status, headers, config) {
         if (data.data.message) {
-          _model.changePasswordError = data.data.message;
+          _model.changePasswordError = data.error.message;
         }
         else {
-          _model.changePasswordError = data.statusText;
+          _model.changePasswordError = data.message;
         }
       })
 
@@ -74,6 +71,7 @@
       $http.post('/api/accounts/logout')
         .success(function (data, status, headers, config) {
           deferred.resolve(data);
+          
           angular.extend(_model, data);
             $state.go('root.login');
         })

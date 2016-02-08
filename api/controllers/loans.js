@@ -26,7 +26,7 @@ function init(router, connection) {
             affiliate_id: req.body.affiliate_id,
             form_fields: {
                 other_industry: !!req.body.other_industry,
-                exact_loan_amount: req.body.exact_loan_amount,
+                exact_loan_amount: parseInt(req.body.exact_loan_amount),
                 exact_business_established: req.body.exact_business_established,
                 customers_other_businesses: !!req.body.customers_other_businesses,
                 revenues_over_5m: !!req.body.revenues_over_5m,
@@ -38,10 +38,10 @@ function init(router, connection) {
                 answer: req.body.answers
             }
         }).then(result => {
-            res.json({success: true, result: result});
+            res.status(200).json({success: true, result: result.matches || []});
         }).catch(error => {
             req.logger.error(`error matching loans - ${error}`);
-            res.json({success: false, error: error.message})
+            res.status(500).json({success: false, error: error.message})
         });
     });
         
