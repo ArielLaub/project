@@ -19,6 +19,12 @@
     </div>
   </div>
 
+  <div class="btn-group pull-right" data-ng-show="vm.authModel.loggedIn">
+    <div data-ui-sref="root.logout" class="btn btn-navbar">
+      Log Out <i class="fa fa-caret-right"></i>
+    </div>
+  </div>
+
   <div class="btn-group pull-right" data-ng-show="!vm.authModel.loggedIn">
     <div data-ui-sref="root.login" class="btn btn-navbar">
       Log In <i class="fa fa-caret-right"></i>
@@ -27,7 +33,7 @@
 
   <div class="btn-group profile-menu pull-right" data-ng-show="vm.authModel.loggedIn">
     <div class="btn btn-default" ng-click="vm.toggleP()">
-      {{ vm.authModel.name}}
+      {{ vm.authModel.first_name}}
 
       <div pageslide ps-side="top" ps-size="120px" ps-auto-close="true" ps-push="true" ps-open="vm.checkedP">
         <div class="profile-menu menu">
