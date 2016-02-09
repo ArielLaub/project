@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  function loanOptionsService($http, $q, $state) {
+  function loanOptionsService($http, $q, $state, localStorageService) {
 
     var _model = {};
 
@@ -132,6 +132,8 @@
     };
 
     var saveLoanOptions = function (post) {
+        post.affiliate_id = localStorageService.get('affiliateId');
+        post.affiliate_sub_id = localStorageService.get('affiliateSubId');
         var deferred = $q.defer();
         $http.post('/api/loans/find', post)
             .then(function success(data, status, headers, config) {
@@ -159,6 +161,6 @@
     .module('loanOptions')
     .factory('loanOptionsService', loanOptionsService);
 
-  loanOptionsService.$inject = ['$http', '$q', '$state'];
+  loanOptionsService.$inject = ['$http', '$q', '$state', 'localStorageService'];
 
 })();

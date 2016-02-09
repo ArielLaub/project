@@ -24,6 +24,7 @@ function init(router, connection) {
         loansService.getQualifingLenders({
             account_id: req.accountId,
             affiliate_id: req.body.affiliate_id,
+            affiliate_sub_id: req.body.affiliate_sub_id,
             form_fields: {
                 other_industry: !!req.body.other_industry,
                 exact_loan_amount: utils.parseInt(req.body.exact_loan_amount),

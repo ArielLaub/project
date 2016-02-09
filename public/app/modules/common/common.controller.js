@@ -8,14 +8,19 @@
     vm.authModel = authService.model;
 
     var queries = $location.search();
-    if (!localStorageService.get('affsub5')) {
-      localStorageService.set('affsub5', queries.aff_sub5);
+    
+    if (!localStorageService.get('affiliateId')) {
+      localStorageService.set('affiliateId', queries.aff_sub5);
     }
 
-    if (!localStorageService.get('affsub2')) {
-      localStorageService.set('affsub2', queries.aff_sub);
+    if (!localStorageService.get('affiliateSubId')) {
+      localStorageService.set('affiliateSubId', queries.aff_sub);
     }
 
+    if (!localStorageService.get('referrerId')) {
+        localStorageService.set('referrerId', queries.ref_id);
+    }
+    
     vm.homeStep1Done = function () {
       if (vm.authModel.exact_loan_amount && vm.authModel.answer[3] && vm.authModel.answer[4]) {
         return true;

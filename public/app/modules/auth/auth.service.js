@@ -19,12 +19,12 @@
         _model.loginError = null;
         _model.changePasswordError = null;
         _model.loggedIn = true;
-        angular.extend(_model, data.result);
-        deferred.resolve(data);
+        angular.extend(_model, data.data.result);
+        deferred.resolve(data.data.result);
         $state.go('root.loan-options');
       }, function error(data, status, headers, config) {
        if (data.status === 401) {
-          _model.loginError = data.error;
+          _model.loginError = data.data.error;
        }
 
         _model.loggedIn = false;
@@ -43,15 +43,15 @@
         confirmPassword: confirmPassword
       }).then(function success(data, status, headers, config) {
         _model.changePasswordError = null;
-        angular.extend(_model, data.result);
-        deferred.resolve(data);
+        angular.extend(_model, data.data.result);
+        deferred.resolve(data.data.result);
         $state.go('root.loan-options');
       }, function error(data, status, headers, config) {
-        if (data.data.message) {
-          _model.changePasswordError = data.error.message;
+        if (data.data.error) {
+          _model.changePasswordError = data.data.error;
         }
         else {
-          _model.changePasswordError = data.message;
+          _model.changePasswordError = 'unknown';
         }
       })
 
@@ -72,7 +72,7 @@
         .success(function (data, status, headers, config) {
           deferred.resolve(data.data.result);
           
-          angular.extend(_model, data);
+          angular.extend(_model, data.data.result);
             $state.go('root.login');
         })
         .error(function (data, status, headers, config) {
@@ -88,7 +88,7 @@
       $http.post('/api/accounts/refreshToken')
         .success(function (data, status, headers, config) {
           _model.loggedIn = true;
-          angular.extend(_model, data);
+          //angular.extend(_model, data.data.result ? data);
           deferred.resolve();
         })
         .error(function (data, status, headers, config) {
@@ -105,11 +105,13 @@
         email: email,
         password: '123456',
         first_name: firstName,
-        last_name: lastName
+        last_name: lastName,
+        referrer_id: localStorageService.get('referrerId'),
+        affiliate_id: localStorageService.get('affiliateId')
       })
         .success(function (data, status, headers, config) {
           _model.loggedIn = true;
-          angular.extend(_model, data);
+          angular.extend(_model, data.data.result);
           deferred.resolve(data.data.result);
           $state.go('root.loan-options');
         })

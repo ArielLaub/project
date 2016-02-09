@@ -67,11 +67,23 @@ var Account = bookshelf.Model.extend({
         })
     },
     
+    //TODO: remove this. it's only used for updating the company which we need to move to a new table anyway.
+    update: function(fields) {
+        return new Promise((resolve, reject) => {            
+            if (!fields.account_id)
+                return reject(new Errors.AccountIdRequired());
+            resolve(fields.account_id);
+        }).then(accountId => {
+            var account = new Account({id: accountId});
+            return account.save(fields, {method: 'update'})
+        });
+    },
+    
     //Class properties
     authenticate: function(email, password) {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             if (!email || !password) 
-                return Promise.reject(new Errors.WrongEmailOrPassword());
+                return reject(new Errors.WrongEmailOrPassword());
             resolve();
         }).then(() => {
             return new this({email: email.toLowerCase().trim()}).fetch({require: true});    

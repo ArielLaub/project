@@ -16,13 +16,6 @@
     vm.moreInfoToggle = function (company_id) {
       vm.moreInfo[company_id] = true;
     };
-
-    vm.addQueries = function(url) {
-      var affsub5 = localStorageService.get('affsub5');
-      var affsub2 = localStorageService.get('affsub2');
-      return url + '&aff_sub5=' + affsub5 + '&aff_sub2=' + affsub2;
-    };
-
   }
 
   angular
