@@ -28,7 +28,7 @@ function execute() {
         if (response.results && response.results.length > 0) {
             logger.info(`fetched ${response.results.length} new conversions`);
             return Promise.each(response.results, result => {
-                logger.info(`processing process for account`)
+                logger.info(`processing process for account`);
                 return LoanProcess.setHasOffersData(
                     result.account_id,
                     result.process_id,

@@ -14,6 +14,7 @@ class Config {
     }
     
     static get mySqlConnectionString() {
+        //return 'mysql://b61d9ce2a2e9d9:7f3facb2@us-cdbr-iron-east-03.cleardb.net/heroku_5676b980ee5afdf?reconnect=true';
         return 'mysql://root:@localhost/auto_test?debug=true&charset=UTF8&timezone=+0200' 
     }
     
@@ -66,18 +67,19 @@ class Config {
 
 class Development extends Config {
     static get mySqlConnectionString() {
-        return process.env.CLEARDB_DATABASE_URL;
+        //mysql://root:dbfun%40res1@52.6.225.136/fundbird?reconnect=true
+        return process.env.MYSQL_DATABASE_URL;
     }
-    
     static get amqpConnectionString() {
         return process.env.CLOUDAMQP_URL;
     }
+
 }
 
 class Production extends Config {
     static get mySqlConnectionString() {
-        //mysql://root:dbfun%40res1@52.6.225.136/fundbird?reconnect=true
-        return process.env.CLEARDB_DATABASE_URL;
+        //mysql://root:dbfun%40res1@54.172.154.214/fundbird?reconnect=true
+        return process.env.MYSQL_DATABASE_URL;
     }
     
     static get amqpConnectionString() {

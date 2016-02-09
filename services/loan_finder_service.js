@@ -76,6 +76,10 @@ class LoadFinderService extends MessageService {
         });
     }
     
+    setAccountCompanyInfo(request) {
+        
+    }
+    
     getQualifingLenders(request) {
         //layer one questions:
         //1. how long have you been in business.
