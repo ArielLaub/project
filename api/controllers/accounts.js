@@ -112,7 +112,6 @@ function init(router, connection) {
                 if (application)
                     Object.assign(account, application.form_fields);
                 
-                res.set('Authorization', `Bearer ${account.access_token}`);
                 res.status(200).json({ success: true, result: account });
             });           
         });

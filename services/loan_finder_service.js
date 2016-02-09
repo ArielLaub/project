@@ -274,7 +274,7 @@ class LoadFinderService extends MessageService {
                 results.sort((a, b) => b.score - a.score);
 
                 //remove long tail
-                while (results.length > 0 && results[results.length-1].score < 700)
+                while (results.length > 0 && results[results.length-1].score < 1000)
                     results.pop();
                 
             });
