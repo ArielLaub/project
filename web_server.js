@@ -17,7 +17,7 @@ function createApp() {
 
     app.use(require('express-bunyan-logger')({
         name: 'web-logger', 
-        excludes: ['req', 'res', 'body', 'req-headers', 'res-headers', 'user-agent', 'response-hrtime'],
+        excludes: ['req', 'res', 'short-body', 'req-headers', 'res-headers', 'user-agent', 'response-hrtime'],
         parseUA: false,
         streams: [{
             level: 'info',

@@ -53,6 +53,7 @@ function init(router, connection) {
                 }
             });            
         }).then(result => {
+            logger.fatal(JSON.stringify(result.matches, null, 4));
             res.status(200).json({success: true, result: result.matches || []});
         }).catch(error => {
             logger.error(`error matching loans - ${error}`);

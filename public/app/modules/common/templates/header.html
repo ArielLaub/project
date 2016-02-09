@@ -25,8 +25,11 @@
     </div>
   </div>
 
-  <div class="btn-group pull-right" data-ng-show="!vm.authModel.loggedIn">
-    <div data-ui-sref="root.login" class="btn btn-navbar">
+  <div class="btn-group pull-right" data-ng-hide="vm.authModel.loggedIn">
+    <div data-ui-sref="root.register" class="btn btn-navbar" data-ng-show="$state.includes('root.login')">
+      Register <i class="fa fa-caret-right"></i>
+    </div>
+    <div data-ui-sref="root.login" class="btn btn-navbar" data-ng-hide="$state.includes('root.login')">
       Log In <i class="fa fa-caret-right"></i>
     </div>
   </div>

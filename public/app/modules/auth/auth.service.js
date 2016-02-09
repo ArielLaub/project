@@ -70,13 +70,13 @@
 
       $http.post('/api/accounts/logout')
         .success(function (data, status, headers, config) {
-          deferred.resolve(data.data.result);
+          deferred.resolve(data.result);
           
-          angular.extend(_model, data.data.result);
+          angular.extend(_model, data.result);
             $state.go('root.login');
         })
         .error(function (data, status, headers, config) {
-          deferred.reject(data.data.error);
+          deferred.reject(data.error);
         });
 
       return deferred.promise;

@@ -12,7 +12,7 @@ var LenderPreference = require('../model/lender_preference');
 var Lender = require('../model/lender');
 var LoanProcess = require('../model/loan_process');
 var LenderType = require('../model/lender_type');
-var Account = require('../model/Account'); //temp until we move companies out of accounts;
+var Account = require('../model/account'); //temp until we move companies out of accounts;
 
 const HOW_MUCH_FUNDING_QUESTION_ID = 1;
 const FUNDING_PURPOSE_QUESTION_ID = 3;
