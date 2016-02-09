@@ -137,7 +137,6 @@
         var deferred = $q.defer();
         $http.post('/api/loans/find', post)
             .then(function success(data, status, headers, config) {
-                debugger;
                 angular.extend(_model, data.data.result);
                 deferred.resolve();
                 $state.go('root.result');

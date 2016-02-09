@@ -111,13 +111,13 @@
       })
         .success(function (data, status, headers, config) {
           _model.loggedIn = true;
-          angular.extend(_model, data.data.result);
-          deferred.resolve(data.data.result);
+          angular.extend(_model, data.result);
+          deferred.resolve(data.result);
           $state.go('root.loan-options');
         })
         .error(function (data, status, headers, config) {
-          $log.debug(data.data.error);
-          deferred.reject(data.data.error);
+          $log.debug(data.error);
+          deferred.reject(data.error);
         });
 
       return deferred.promise;
