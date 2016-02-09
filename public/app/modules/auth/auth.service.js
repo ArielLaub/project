@@ -88,11 +88,11 @@
       $http.post('/api/accounts/refreshToken')
         .success(function (data, status, headers, config) {
           _model.loggedIn = true;
-          //angular.extend(_model, data.data.result ? data);
-          deferred.resolve();
+          angular.extend(_model, data.result);
+          deferred.resolve(data.result);
         })
         .error(function (data, status, headers, config) {
-          deferred.reject(data.data.error);
+          deferred.reject(data.error);
         });
 
       return deferred.promise;

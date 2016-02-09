@@ -1,7 +1,7 @@
 <div class="results">
 
   <div class="intro text-center">
-    Congratulations <b>{{ vm.authModel.name }}</b>, <br/>
+    Congratulations <b>{{ vm.authModel.first_name }}</b>, <br/>
     we've found these funding options <br/>
     for your business
   </div>
@@ -12,7 +12,7 @@
 
       <div class="box-wrapper">
         <div class="col-xs-4 box">
-          <div><img src="app/public-assets/img/{{opt.logo ? opt.logo.replace('jpg', 'png') : ''}}"/></div>
+          <div><img src="app/public-assets/img/{{opt.logo && opt.logo.replace ? opt.logo.replace('jpg', 'png') : ''}}"/></div>
         </div>
 
         <div class="col-xs-4 box">

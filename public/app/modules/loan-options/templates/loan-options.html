@@ -97,7 +97,6 @@
            data-ng-class="'{{ opt.name | spaceless | lowercase}}'"
            uib-btn-radio="opt.value"
            name="businessType"
-           required
            data-ng-model="vm.authModel.answer[6]">
       <span>{{ opt.name }}</span>
     </label>
@@ -111,7 +110,6 @@
       <select class="form-control needsclick"
               name="loanTerm"
               id="inputError"
-              required
               data-ng-class="{'pre-select': !vm.authModel.answer[2] || vm.authModel.answer[2] === '13' || vm.authModel.answer[2] === '14'}"
               data-ng-options="opt.value as opt.name for opt in vm.fieldOptions.loanTerm|filter:opt.exclude === true"
               data-ng-model="vm.authModel.answer[2]">
@@ -122,7 +120,6 @@
            data-ng-repeat="opt in vm.fieldOptions.loanTerm"
            data-ng-hide="!opt.button"
            name="loanTerm"
-           required
            uib-btn-radio="opt.value"
            data-ng-class="'{{ opt.name | spaceless | lowercase}}'"
            data-ng-model="vm.authModel.answer[2]">
@@ -195,7 +192,6 @@
                data-ng-repeat="opt in vm.fieldOptions.creditCards"
                data-ng-hide="opt.title"
                name="creditCards"
-               required
                data-ng-click="vm.updateAnswerModel10()"
                data-ng-model="vm.authModel.process_card">
           <span>{{ opt.name }}</span>
@@ -221,7 +217,6 @@
                data-ng-repeat="opt in vm.fieldOptions.over4K"
                data-ng-hide="opt.title"
                name="over4K"
-               required
                data-ng-click="vm.updateAnswerModel10()"
                data-ng-model="vm.authModel.process_over_2500">
           <span>{{ opt.name }}</span>
@@ -246,7 +241,6 @@
                data-ng-repeat="opt in vm.fieldOptions.otherBusinesses"
                data-ng-hide="opt.title"
                name="otherBusinesses"
-               required
                data-ng-click="vm.authModel.answer[9] = opt.originalValue"
                data-ng-model="vm.authModel.customers_other_businesses">
           <span>{{ opt.name }}</span>
@@ -271,7 +265,6 @@
                data-ng-repeat="opt in vm.fieldOptions.over5M"
                data-ng-hide="opt.title"
                name="over5M"
-               required
                data-ng-model="vm.authModel.revenues_over_5m">
           <span>{{ opt.name }}</span>
         </label>
@@ -295,7 +288,6 @@
                data-ng-repeat="opt in vm.fieldOptions.guarantee"
                data-ng-hide="opt.title"
                name="guarantee"
-               required
                data-ng-click="vm.authModel.answer[12] = opt.originalValue"
                data-ng-model="vm.authModel.personal_guarantee">
           <span>{{ opt.name }}</span>
@@ -314,7 +306,6 @@
            class="form-control needsclick"
            id="inputError"
            name="companyNumber"
-           required
            data-ng-model="vm.authModel.company_number"/>
                 <span class="help-block"
                       data-ng-show="loanOptionsForm.companyNumber.$invalid && loanOptionsForm.$submitted">
@@ -328,7 +319,6 @@
            class="form-control needsclick"
            id="inputError"
            name="companyName"
-           required
            data-ng-model="vm.authModel.company"/>
                 <span class="help-block"
                       data-ng-show="loanOptionsForm.companyName.$invalid && loanOptionsForm.$submitted">
@@ -342,7 +332,6 @@
            class="form-control needsclick"
            id="postal-code"
            name="postalCode"
-           required
            data-ng-model="vm.authModel.postal_code"/>
                 <span class="help-block"
                       data-ng-show="loanOptionsForm.postalCode.$invalid && loanOptionsForm.$submitted">
@@ -356,7 +345,6 @@
            class="form-control needsclick"
            id="phone"
            name="phone"
-           required
            data-ng-model="vm.authModel.phone"/>
                 <span class="help-block"
                       data-ng-show="loanOptionsForm.phone.$invalid && loanOptionsForm.$submitted">

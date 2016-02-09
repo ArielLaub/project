@@ -35,7 +35,7 @@ function init(router, connection) {
             });
         }).catch(error => {
             logger.info(`failed to authenticate ${JSON.stringify(req.body)} - ${error.message}`);
-            res.status(401).json({ success: false, error: 'access_denied'});
+            res.status(401).json({ success: false, error: 'wrong username / password'});
         });
     });
     
@@ -45,7 +45,7 @@ function init(router, connection) {
                 res.status(200).json({ success: true, result: result});
             }).catch(error => {
                 logger.info(`failed attempt to fetch me for ${req.accountId}`);
-                res.status(401).json({ success: false, error: 'access_denied'});
+                res.status(401).json({ success: false, error: 'access denied'});
             });
     });
     
@@ -69,7 +69,7 @@ function init(router, connection) {
             res.status(200).json({success: true});
         }).catch(error => {
             logger.error(`failed attempt to set new password for ${req.body.email} - ${error.message}`);
-            res.status(401).json({success: false, error: 'access_denied'});
+            res.status(401).json({success: false, error: 'wrong username / password'});
         });
     });
     
@@ -107,7 +107,15 @@ function init(router, connection) {
     });
     
     routes.post('/refreshToken', authenticate, function(req, res) {
-        res.status(200).json({success: true});
+        accountsService.getAccountById({account_id: req.accountId}).then(account => {
+            return loanFinderService.getAccountLastApplication({account_id: account.id}).then(application => {
+                if (application)
+                    Object.assign(account, application.form_fields);
+                
+                res.set('Authorization', `Bearer ${account.access_token}`);
+                res.status(200).json({ success: true, result: account });
+            });           
+        });
     })
     
     routes.post('/logout', function(req, res) {

@@ -28,7 +28,7 @@ module.exports = function(connection) {
             } else {
                 return res.status(401).send({ 
                     success: false, 
-                    message: 'access denied' 
+                    error: 'invalid token' 
                 });
             }            
         }

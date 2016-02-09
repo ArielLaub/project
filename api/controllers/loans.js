@@ -21,17 +21,18 @@ function init(router, connection) {
     var routes = express.Router(); 
 
     routes.post('/find', authenticate, function(req, res) {
-        if (!req.body.company)
-            return res.status(400).json({success: false, error: 'company name is required'});
-        if (!req.body.company_number)
-            return res.status(400).json({success: false, error: 'company number is required'});
-
-        return loansService.setAccountCompanyInfo({
-            account_id: req.accountId,
-            company_name: req.body.company,
-            company_number: req.body.company_number,
-            phone: req.body.phone,
-            postal_code: req.body.postal_code
+        return new Promise((resolve, reject) => {
+            if (req.body.company_number && req.body.company) {
+                loansService.setAccountCompanyInfo({
+                    account_id: req.accountId,
+                    company_name: req.body.company,
+                    company_number: req.body.company_number,
+                    phone: req.body.phone,
+                    postal_code: req.body.postal_code
+                }).then(resolve).catch(reject);
+            } else {
+                resolve();
+            }
         }).then(() => {
             return loansService.getQualifingLenders({
                 account_id: req.accountId,

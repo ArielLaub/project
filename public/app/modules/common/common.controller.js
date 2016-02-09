@@ -43,7 +43,7 @@
     // Put a comma on the amount value
     $scope.$watch('vm.authModel.exact_loan_amount', function (value) {
       if (value) {
-        vm.authModel.exact_loan_amount = value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        vm.authModel.exact_loan_amount = String(value).replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       }
     });
 
