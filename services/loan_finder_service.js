@@ -12,6 +12,7 @@ var LenderPreference = require('../model/lender_preference');
 var Lender = require('../model/lender');
 var LoanProcess = require('../model/loan_process');
 var LenderType = require('../model/lender_type');
+var Account = require('../model/Account'); //temp until we move companies out of accounts;
 
 const HOW_MUCH_FUNDING_QUESTION_ID = 1;
 const FUNDING_PURPOSE_QUESTION_ID = 3;
@@ -57,11 +58,12 @@ class LoadFinderService extends MessageService {
     }
     
     getAccountLastApplication(request) {
-        return new Promise(resolve => {
-            if (!request.account_id) throw new Errors.AccountIdRequired();
-            resolve();                        
-        }).then(() => {
-            return LoanProcess.getLastByAccountId(request.account_id);
+        return new Promise((resolve, reject) => {
+            if (!request.account_id) 
+                return reject(new Errors.AccountIdRequired());
+            resolve(request.account_id);                        
+        }).then(accountId => {
+            return LoanProcess.getLastByAccountId(accountId);
         }).then(process => {
             if (!process) return {};
             Object.keys(process.form_fields.answer).forEach(question => {
@@ -77,7 +79,26 @@ class LoadFinderService extends MessageService {
     }
     
     setAccountCompanyInfo(request) {
-        
+        return new Promise((resolve, reject) => {
+            if (!request.account_id) 
+                return reject(new Errors.AccountIdRequired());
+            resolve(request.account_id);                        
+        }).then(accountId => {
+            return Account.setCompany(accountId, {
+                company: request.company_name ? request.company_name : undefined,
+                company_number: request.company_number ? request.company_number : undefined,
+                postal_code: request.postal_code ? request.postal_code : undefined,
+                phone: request.phone ? request.phone : undefined
+            }).then(account => {
+                return {
+                    account_id: account.id,
+                    company_name: account.company,
+                    company_number: account.company_number,
+                    phone: account.phone,
+                    postal_code: account.postal_code
+                }
+            });
+        });
     }
     
     getQualifingLenders(request) {

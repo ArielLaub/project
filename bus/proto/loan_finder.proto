@@ -80,8 +80,17 @@ message ApplicationResponse {
     LoanFinder.FormFields form_fields = 2;
 }
 
+message SetCompanyInfoRequestResponse {
+    int32 account_id = 1;
+    string company_name = 2;
+    string company_number = 3;
+    string phone = 4;
+    string postal_code = 5;
+}
+
 service Service {
     rpc getQuestions(LoanFinder.GetQuestionsRequest) returns(LoanFinder.GetQuestionsResponse);
     rpc getQualifingLenders(LoanFinder.GetQualifingLendersRequest) returns(LoanFinder.GetQualifingLendersResponse);
     rpc getAccountLastApplication(Platform.AccountIdRequest) returns(LoanFinder.ApplicationResponse);
+    rpc setAccountCompanyInfo(LoanFinder.SetCompanyInfoRequestResponse) returns(LoanFinder.SetCompanyInfoRequestResponse);
 }

@@ -4,7 +4,7 @@ function safeNumberParser(parser) {
     return (val, def) => {
         var result;
         try { 
-            result = parser(val);
+            result = parser(String(val).replace(',',''));
             if (!isNaN(result)) return result; 
         } catch (e) {}
         return def;        

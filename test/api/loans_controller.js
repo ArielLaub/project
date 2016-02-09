@@ -18,7 +18,7 @@ describe('Loans Controller tests', function() {
     var notifications = new MockNotificationsService(connection);
     var accounts = new AccountsService(connection);
     var loanFinder = new LoanFinderService(connection);
-    var token;
+    var token, account;
     
     before(function(done) {
         connection.connectUrl().then(() => {
@@ -35,7 +35,7 @@ describe('Loans Controller tests', function() {
         }).then(app => {
             request = supertest(app);
         }).then(() => {
-            var account = {
+            account = {
                 email: 'test@gmail.com',
                 password: '123456',
                 first_name: 'test',
@@ -56,7 +56,7 @@ describe('Loans Controller tests', function() {
                     if (err) return done(err);
                     expect(response.body).to.have.property('success', true);
                     expect(response.body).to.have.property('result');
-                    var account = response.body.result;
+                    account = response.body.result;
                     expect(account).to.have.property('access_token');
                     token = account.access_token;
                     done();
@@ -75,7 +75,11 @@ describe('Loans Controller tests', function() {
             process_card: '1',
             process_over_2500: '1',
             customers_other_businesses: '1',
-            revenues_over_5m: '1'
+            revenues_over_5m: '1',
+            company: 'My Company',
+            company_number: '123456',
+            postal_code: '666666',
+            phone: '911'
         };
         request
             .post('/api/loans/find')
@@ -89,7 +93,13 @@ describe('Loans Controller tests', function() {
                 expect(response.body).to.have.property('success', true);
                 expect(response.body).to.have.property('result');
                 expect(response.body.result).to.have.length.greaterThan(0);
-                done();
+                accounts.getAccountById({account_id: account.id}).then(account => {
+                    expect(account).to.have.a.property('company', 'My Company');
+                    expect(account).to.have.a.property('company_number', '123456');
+                    expect(account).to.have.a.property('postal_code', '666666');
+                    expect(account).to.have.a.property('phone', '911');
+                    done();
+                }).catch(done);
             });
     });
 

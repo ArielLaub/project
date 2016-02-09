@@ -68,14 +68,17 @@ var Account = bookshelf.Model.extend({
     },
     
     //TODO: remove this. it's only used for updating the company which we need to move to a new table anyway.
-    update: function(fields) {
+    setCompany: function(accountId, fields) {
+        var account;
         return new Promise((resolve, reject) => {            
-            if (!fields.account_id)
+            if (!accountId)
                 return reject(new Errors.AccountIdRequired());
-            resolve(fields.account_id);
-        }).then(accountId => {
-            var account = new Account({id: accountId});
-            return account.save(fields, {method: 'update'})
+            resolve();
+        }).then(() => {
+            account = new Account({id: accountId});
+            return account.save(fields, {method: 'update'});
+        }).then(updated => {
+            return updated.toJSON();
         });
     },
     
