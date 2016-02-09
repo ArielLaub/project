@@ -19,7 +19,6 @@
     });
 
     vm.loanOptionsFormSubmit = function () {
-      debugger;
       if ($scope.loanOptionsForm.$valid) {
 
         // Set defaul values

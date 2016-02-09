@@ -3,7 +3,7 @@
 
   function loanOptionsService($http, $q, $state, localStorageService) {
 
-    var _model = {};
+    var _model = [];
 
     // TODO: Move to database or general config file
     var _fieldOptions = {
@@ -137,11 +137,13 @@
         var deferred = $q.defer();
         $http.post('/api/loans/find', post)
             .then(function success(data, status, headers, config) {
-                angular.extend(_model, data.data.result);
+                _model.length = 0; //clear array - this is ES5 compliant
+                for(var i = 0; i < data.data.result.length; ++i) 
+                    _model.push(data.data.result[i]);
                 deferred.resolve();
                 $state.go('root.result');
             }, function error(data, status, headers, config) {
-                deferred.reject(data);
+                deferred.reject(data.data.error);
                 $state.go('root.login');
             });
 
