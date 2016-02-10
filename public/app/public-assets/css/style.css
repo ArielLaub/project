@@ -297,6 +297,7 @@ footer .security-info {
 /* BOOTSTRAP OVERRIDE */
 .navbar-app .btn-navbar, .navbar-app .btn {
     text-transform: none;
+    color: #34AED8;
 }
 
 .btn-success {

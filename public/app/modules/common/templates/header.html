@@ -2,7 +2,7 @@
 
   <div class="navbar-brand navbar-brand-center">
         <span data-ui-sref="root.home">
-            FUNDBIRD LOGO
+            <img width="150px" src='app/public-assets/img/header_logo.png'/>
         </span>
   </div>
 
@@ -10,7 +10,7 @@
     <div class="btn btn-navbar" ng-click="vm.toggleM()">
       <i class="fa fa-bars"></i>
 
-      <div pageslide ps-side="top" ps-size="200px" ps-auto-close="true" ps-push="true" ps-open="vm.checkedM">
+      <div pageslide ps-side="top" ps-size="200px" ps-auto-close="true" ps-squeeze="true" ps-open="vm.checkedM">
         <div class="main-menu menu">
           <div data-ng-include="'app/modules/common/templates/main-menu.html'"></div>
         </div>
