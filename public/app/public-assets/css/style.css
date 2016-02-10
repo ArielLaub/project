@@ -298,6 +298,7 @@ footer .security-info {
 .navbar-app .btn-navbar, .navbar-app .btn {
     text-transform: none;
     color: #34AED8;
+    z-index: 1000;
 }
 
 .btn-success {
@@ -369,7 +370,7 @@ form .pre-select option {
     line-height: 3em;
     border-radius: 100%;
     position: relative;
-    z-index: 1000;
+    z-index: 999;
 }
 
 .progresss > li:after {

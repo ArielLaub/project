@@ -1,50 +1,79 @@
 <div class="navbar navbar-app navbar-absolute-top">
 
-  <div class="navbar-brand navbar-brand-center">
-        <span data-ui-sref="root.home">
-            <img width="150px" src='app/public-assets/img/header_logo.png'/>
-        </span>
-  </div>
+    <div class="navbar-brand navbar-brand-center">
+            <span data-ui-sref="root.home">
+                <img width="120px" src='app/public-assets/img/header_logo.png'/>
+            </span>
+    </div>
 
-  <div class="btn-group pull-left">
-    <div class="btn btn-navbar" ng-click="vm.toggleM()">
-      <i class="fa fa-bars"></i>
+    <div class="btn-group pull-left">
+        <div class="btn btn-navbar" ng-click="vm.toggleM()">
+        <i class="fa fa-bars"></i>
 
-      <div pageslide ps-side="top" ps-size="200px" ps-auto-close="true" ps-squeeze="true" ps-open="vm.checkedM">
-        <div class="main-menu menu">
-          <div data-ng-include="'app/modules/common/templates/main-menu.html'"></div>
+        <div pageslide ps-side="top" ps-size="200px" ps-auto-close="true" ps-squeeze="true" ps-open="vm.checkedM">
+            <div class="main-menu menu">
+            <div data-ng-include="'app/modules/common/templates/main-menu.html'"></div>
+            </div>
         </div>
-      </div>
 
-    </div>
-  </div>
-
-  <div class="btn-group pull-right" data-ng-show="vm.authModel.loggedIn">
-    <div data-ui-sref="root.logout" class="btn btn-navbar">
-      Log Out <i class="fa fa-caret-right"></i>
-    </div>
-  </div>
-
-  <div class="btn-group pull-right" data-ng-hide="vm.authModel.loggedIn">
-    <div data-ui-sref="root.register" class="btn btn-navbar" data-ng-show="$state.includes('root.login')">
-      Register <i class="fa fa-caret-right"></i>
-    </div>
-    <div data-ui-sref="root.login" class="btn btn-navbar" data-ng-hide="$state.includes('root.login')">
-      Log In <i class="fa fa-caret-right"></i>
-    </div>
-  </div>
-
-  <div class="btn-group profile-menu pull-right" data-ng-show="vm.authModel.loggedIn">
-    <div class="btn btn-default" ng-click="vm.toggleP()">
-      {{ vm.authModel.first_name}}
-
-      <div pageslide ps-side="top" ps-size="120px" ps-auto-close="true" ps-push="true" ps-open="vm.checkedP">
-        <div class="profile-menu menu">
-          <div data-ng-include="'app/modules/common/templates/profile-menu.html'"></div>
         </div>
-      </div>
-
     </div>
-  </div>
+
+    <div data-ng-show="vm.authModel.loggedIn" class="btn-group pull-right">
+        <a ui-turn-on='myDropdown' class='btn'>
+            <span data.ng.show="vm.authModel.loggedIn">{{vm.authModel.first_name}}&nbsp;</span><i class="fa fa-angle-down"></i>
+        </a>
+        <ul
+            class="dropdown-menu"
+            ui-outer-click="Ui.turnOff('myDropdown')"
+            ui-outer-click-if="Ui.active('myDropdown')"
+            role="menu"
+            ui-show="myDropdown" 
+            ui-state="myDropdown"
+            ui-turn-off="myDropdown">
+
+            <li>
+                <div class="btn btn-navbar">
+                    <i class="fa fa-user"></i>&nbsp;&nbsp;Manage Account
+                </div>
+            </li>
+            <li>
+                <div data-ui-sref="root.loan-options" class="btn btn-navbar">
+                    <i class="fa fa-sliders"></i>&nbsp;&nbsp;My Loan Options 
+                </div>                
+            </li>
+            <li>
+                <div data-ui-sref="root.change-password" class="btn btn-navbar">
+                    <i class="fa fa-lock"></i>&nbsp;&nbsp;Change Password
+                </div>                
+            </li>
+            <li class="divider"></li>
+            <li>
+                <div data-ui-sref="root.logout" class="btn btn-navbar">
+                    <i class="fa fa-sign-out"></i>&nbsp;&nbsp;Log Out 
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="btn-group pull-right" data-ng-hide="vm.authModel.loggedIn">
+        <div data-ng-show="$state.includes('root.login')" data-ui-sref="root.register" class="btn btn-navbar">
+            Register&nbsp;<i class="fa fa-user-plus"></i>
+        </div>
+        <div data-ng-hide="$state.includes('root.login')"data-ui-sref="root.login" class="btn btn-navbar">
+            <a>Log In&nbsp;<i class="fa fa-sign-in"></i></a>
+        </div>
+    </div>
+
+
+    <div class="btn-group profile-menu pull-right" data-ng-show="vm.authModel.loggedIn">
+        <div class="btn btn-default" ng-click="vm.toggleP()">
+        <div pageslide ps-side="top" ps-size="120px" ps-auto-close="true" ps-push="true" ps-open="vm.checkedP">
+            <div class="profile-menu menu">
+            <div data-ng-include="'app/modules/common/templates/profile-menu.html'"></div>
+            </div>
+        </div>
+
+        </div>
+    </div>
 
 </div>

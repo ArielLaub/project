@@ -51,6 +51,7 @@
         {value: '52', name: '£100,000 - £1,000,000'},
         {value: '53', name: '£1,000,000 +'}
       ],
+
       businessType: [
         {value: '37', name: 'Sole trader'},
         {value: '40', name: 'Partnership'},
@@ -58,10 +59,9 @@
         {value: '41', name: 'Limited company'}
       ],
 
-
       loanTerm: [
-        {value: '13', name: 'Ongoing', exclude: true, button: true},
-        {value: '14', name: 'Flexible', exclude: true, button: true},
+        {value: '13', name: 'Ongoing', exclude: false},
+        {value: '14', name: 'Flexible', exclude: false},
         {value: '15', name: '1 - 5 months', exclude: false},
         {value: '16', name: '6 - 12 months', exclude: false},
         {value: '17', name: '1 - 2 years', exclude: false},
