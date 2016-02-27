@@ -112,11 +112,9 @@ class Connection extends EventEmitter {
             handle.channel.close(channel, 200, 'OK');
 
             handle.once(`${channel}:channel.close-ok`, () => {
+                handle.removeAllListeners(`${channel}:basic.deliver`);
                 logger.info(`channel ${channel} closed`);
-                //this caused double messages after reopening a channel.
-                //rabbit shows only 1 queued message but I received 2. I suspect a bramqp bug
-                //for now always using a new channel solves it and we have 64k channels per connection.
-                //this._recycledChannels.push(channel);
+                this._recycledChannels.push(channel);
 
                 resolve();
             });
